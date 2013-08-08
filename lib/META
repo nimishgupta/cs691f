@@ -1,0 +1,12 @@
+# OASIS_START
+# DO NOT EDIT (digest: 6252c7d437efc5ac1aeb5a0e20e75855)
+version = "0.1"
+description = "Software for CS691f"
+requires = "oUnit"
+archive(byte) = "cs691f.cma"
+archive(byte, plugin) = "cs691f.cma"
+archive(native) = "cs691f.cmxa"
+archive(native, plugin) = "cs691f.cmxs"
+exists_if = "cs691f.cma"
+# OASIS_STOP
+

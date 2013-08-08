@@ -1,0 +1,6 @@
+.DS_Store
+*.byte
+*.native
+setup.data
+setup.log
+_build
