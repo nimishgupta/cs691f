@@ -6,9 +6,9 @@ TEST "positive numerals" =
 
 TEST "overflow OCaml int" =
   let succ_maxint = Int64.to_string (Int64.succ (Int64.of_int max_int)) in
-	match parse_exp_from_string succ_maxint with
-		| ParseError _ -> true
-		| _ -> false
+  match parse_exp_from_string succ_maxint with
+    | ParseError _ -> true
+    | _ -> false
 
 TEST "negative numerals" = 
   parse_exp_from_string "-1" = Exp (Int (-1))
