@@ -1,36 +1,27 @@
 open Arith_syntax
 open PL_util
-module Parser = Arith_parser
-module Lexer = Arith_lexer
+
+module Parsers = Lexparse_util.MakeParsers (struct
+  exception ParseError = Arith_parser.Error
+  type token = Arith_parser.token
+  type exp = Arith_syntax.exp
+  let parser = Arith_parser.program
+  let lexer = Arith_lexer.token
+end)
+
+open Parsers
 
 type result = 
   | Exp of exp
-  | ParseError of string
+  | ParseError of string 
 
-let parse_from_lexbuf (lexbuf : Lexing.lexbuf) : result =
-  let open Lexing in
-  let open Format in  
-  try
-    Exp (Parser.program Lexer.token lexbuf)
-  with
-    | Failure "lexing: empty token" ->
-         ParseError (sprintf "lexical error at %s" 
-                       (string_of_pos lexbuf.lex_curr_p))
-    | Lexer.Error str ->
-         ParseError (sprintf "%s (lexical error at %s)" 
-                       str
-                       (string_of_pos lexbuf.lex_curr_p))
+let parse_from_lexbuf (lexbuf : Lexing.lexbuf) : result = 
+  try Exp (parse_from_lexbuf lexbuf)
+  with Lexparse_util.Error str -> ParseError str
 
-    | Parser.Error ->
-         ParseError (sprintf "parse error at %s; unexpected token %s"
-                       (string_of_pos lexbuf.lex_curr_p)
-                       (lexeme lexbuf))
- 
 let parse_exp_from_file (file_name : string) : result =
-  let open Lexing in
-  let lexbuf = from_channel (open_in file_name) in
-  lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = file_name };
-  parse_from_lexbuf lexbuf
+  try Exp (parse_exp_from_file file_name)
+  with Lexparse_util.Error str -> ParseError str
 
 let parse_exp_from_string (str : string) : result = 
   parse_from_lexbuf (Lexing.from_string str)

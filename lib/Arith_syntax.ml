@@ -1,5 +1,3 @@
-type pos = Lexing.position
-
 type id = string
 
 type exp =

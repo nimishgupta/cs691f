@@ -1,7 +1,7 @@
 {
   open Lexing
   open Lexparse_util
-  open Arith_parser
+  open HOF_parser
 }
 
 let blank = [ ' ' '\t' ]
@@ -16,13 +16,22 @@ rule token = parse
   | blank+ { token lexbuf }
   | eof { EOF }
   | decimal as n { INT (int_of_string n) } 
-  | "+" { PLUS }
   | "(" { LPAREN }
   | ")" { RPAREN }
+  | "," { COMMA }
+  | "." { DOT }
+  | "+" { PLUS }
+  | "-" { MINUS }  
+  | "==" { EQUALSEQUALS }  
   | "*" { STAR }
-  | "=" { EQUALS }
-  | "in" { IN }
-  | "let" { LET }
+  | "<" { LESSTHAN }
+  | "lambda" { LAMBDA }
+  | "if" { IF }
+  | "then" { THEN }
+  | "else" { ELSE }
+  | "true" { TRUE }
+  | "false" { FALSE }
+  | "rec" { REC }
   | eof { EOF } 
   | id as x { ID x } (* by going last, we lex keywords instead of variables *)
 

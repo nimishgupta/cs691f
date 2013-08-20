@@ -13,12 +13,16 @@ Library cs691f
   BuildDepends:
     oUnit
   InternalModules:
+    Lexparse_util,
     Arith_lexer,
-    Arith_parser
+    Arith_parser,
+    HOF_parser,
+    HOF_lexer
   Modules:
     PL_util,
     Arith_syntax,
-    Arith_util
+    Arith_util,
+    HOF_syntax
 
 Executable cs691f
   Path: tool
