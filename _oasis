@@ -22,7 +22,8 @@ Library cs691f
     PL_util,
     Arith_syntax,
     Arith_util,
-    HOF_syntax
+    HOF_syntax,
+    HOF_util
 
 Executable cs691f
   Path: tool

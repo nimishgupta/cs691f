@@ -27,8 +27,9 @@ let run_process (filename : string) (args : string list) : int =
 	  	  -1
 
 let check_code (return_code : int) : unit =
-	if return_code <> 0 then
-	  Format.printf "Error (exit code %d)\n%!" return_code
+	(if return_code <> 0 then
+	  Format.printf "Error (exit code %d)\n%!" return_code);
+	exit return_code
 
 (* Use ocamlbuild to clean. *)
 let clean () : unit =
@@ -40,11 +41,15 @@ let build (main_module : string) : unit =
 	let target = Format.sprintf "%s.d.byte" main_module in
   check_code (run_process "ocamlbuild" [
   	"-use-ocamlfind"; "-classic-display"; "-no-links";
-	   "-tag-line"; "<*.ml{,i}> : syntax(camlp4o), package(pa_ounit.syntax), \
-	                              package(oUnit), package(cs691f)";
-	   "-tag-line"; "<*.d.byte> : package(pa_ounit), package(oUnit), \
+	   "-tag-line"; "<*.ml{,i}> : syntax(camlp4o), \
+	   	                          package(pa_ounit.syntax), \
+	                              package(oUnit), \
 	                              package(cs691f)";
-	   "-tag-line"; "<*.native> : package(pa_ounit), package(oUnit), \
+	   "-tag-line"; "<*.d.byte> : package(pa_ounit), \
+	                              package(oUnit), \
+	                              package(cs691f)";
+	   "-tag-line"; "<*.native> : package(pa_ounit), \
+	                              package(oUnit), \
 	                              package(cs691f)";
 	   target
 	])

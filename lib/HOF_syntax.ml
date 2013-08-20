@@ -16,4 +16,8 @@ type exp =
   | If of exp * exp * exp
   | Lambda of id list * exp
   | Apply of exp * exp list
-  | Rec of id * exp
+
+type value =
+  | IntVal of int
+  | BoolVal of bool
+  | ClosureVal of (id * value) list * id list * exp

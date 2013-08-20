@@ -6,7 +6,7 @@ open HOF_syntax
 
 %token LPAREN RPAREN COMMA DOT
 %token PLUS MINUS EQUALSEQUALS LESSTHAN STAR
-%token LAMBDA IF THEN ELSE TRUE FALSE REC
+%token LAMBDA IF THEN ELSE TRUE FALSE
 %token EOF
 %token<string> ID
 %token<int> INT
@@ -58,7 +58,6 @@ exp :
   | atom LPAREN args RPAREN { Apply ($1, $3) }
   | IF exp THEN exp ELSE exp { If ($2, $4, $6) }
   | LAMBDA LPAREN ids RPAREN DOT exp { Lambda ($3, $6) }
-  | REC LPAREN ID RPAREN DOT exp { Rec ($3, $6) }
 
 program :
   | exp EOF { $1 }

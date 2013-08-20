@@ -31,29 +31,39 @@ module Format = struct
   open Format
 
   (* Indicates the immediately surrounding expression, which determines whether
-     or not we need parentheses. We use LET when there is no context or the
-     context is a parenthesis, but that may be a bad idea. *)
-  type cxt = LET | MUL | ADD
+     or not we need parentheses.  *)
+  type cxt = Top | LeftMul | RightMul | LeftAdd | RightAdd
 
   let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit = match e with
-    | Let (x, e1, e2) ->
-      fprintf fmt "@[let %s = %a in %a@]" x (exp LET) e1 (exp LET) e2
+    | Let (x, e1, e2) -> begin match cxt with
+      | Top ->
+        fprintf fmt "@[let %s = %a in %a@]" x (exp Top) e1 (exp Top) e2
+      | _ ->
+        fprintf fmt "@[(@[let %s = %a in %a@])@]" x (exp Top) e1 (exp Top) e2
+    end
     | Mul (e1, e2) -> begin match cxt with
-      | ADD -> fprintf fmt "@[(@[%a * %a@])@]" (exp MUL) e1 (exp MUL) e2
-      | LET
-      | MUL -> fprintf fmt "@[%a * %a@]" (exp MUL) e1 (exp MUL) e2
+      | LeftAdd
+      | RightAdd
+      | RightMul ->
+        fprintf fmt "@[(@[%a * %a@])@]" (exp LeftMul) e1 (exp RightMul) e2
+      | Top
+      | LeftMul -> fprintf fmt "@[%a * %a@]" (exp LeftMul) e1 (exp RightMul) e2
     end
     | Add (e1, e2) -> begin match cxt with
-      | LET
-      | ADD -> fprintf fmt "@[%a + %a@]" (exp ADD) e1 (exp ADD) e2
-      | MUL -> fprintf fmt "@[(@[%a + %a@])@]" (exp ADD) e1 (exp ADD) e2
+      | Top
+      | LeftMul
+      | RightMul
+      | LeftAdd ->
+        fprintf fmt "@[%a + %a@]" (exp LeftAdd) e1 (exp RightAdd) e2
+      | RightAdd ->
+        fprintf fmt "@[(@[%a + %a@])@]" (exp LeftAdd) e1 (exp RightAdd) e2
     end
     | Int n -> fprintf fmt "@[%d@]" n
     | Id x -> fprintf fmt "@[%s@]" x
 
 end
 
-let format_exp = Format.exp Format.LET
+let format_exp = Format.exp Format.Top
 
 let string_of_exp (e : exp) : string = make_string_of format_exp e
 

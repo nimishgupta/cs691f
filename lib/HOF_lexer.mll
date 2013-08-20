@@ -31,7 +31,6 @@ rule token = parse
   | "else" { ELSE }
   | "true" { TRUE }
   | "false" { FALSE }
-  | "rec" { REC }
   | eof { EOF } 
   | id as x { ID x } (* by going last, we lex keywords instead of variables *)
 
