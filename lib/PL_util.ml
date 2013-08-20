@@ -9,7 +9,6 @@ let string_of_pos pos =
     Format.sprintf "line %d, column %d" pos.pos_lnum
       (pos.pos_cnum - pos.pos_bol)
 
-
 let make_string_of formatter x =
 	let open Format in
   let buf = Buffer.create 100 in

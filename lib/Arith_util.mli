@@ -11,3 +11,4 @@ val parse_exp_from_file : string -> result
 
 val print_exp : exp -> unit
 
+val string_of_exp : exp -> string

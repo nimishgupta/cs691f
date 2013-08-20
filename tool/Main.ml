@@ -11,9 +11,9 @@ let assert_file_exists (filename : string) : unit =
 let run_process (filename : string) (args : string list) : int =
 	let open Unix in
 	(* TODO(arjun): printed string should be shell-escaped so you can copy it
-	   to the terminal.
-	print_string (String.concat " " (filename :: args));
-	print_newline (); *)
+	   to the terminal. *)
+  print_string (String.concat " " (filename :: args));
+	print_newline (); 
 	let pid = create_process filename (Array.of_list (filename :: args))
 	  stdin stdout stderr in
 	let (_, exit_status) = Unix.waitpid [] pid in
@@ -40,10 +40,12 @@ let build (main_module : string) : unit =
 	let target = Format.sprintf "%s.d.byte" main_module in
   check_code (run_process "ocamlbuild" [
   	"-use-ocamlfind"; "-classic-display"; "-no-links";
-	   "-tag-line";  "<*.ml> : syntax(camlp4o), package(pa_ounit.syntax)";
-	   "-tag-line"; "<*.d.byte> : package(pa_ounit)";
-	   "-tag-line"; "<*.native> : package(pa_ounit)";
-	   "-pkgs"; "oUnit";
+	   "-tag-line"; "<*.ml{,i}> : syntax(camlp4o), package(pa_ounit.syntax), \
+	                              package(oUnit), package(cs691f)";
+	   "-tag-line"; "<*.d.byte> : package(pa_ounit), package(oUnit), \
+	                              package(cs691f)";
+	   "-tag-line"; "<*.native> : package(pa_ounit), package(oUnit), \
+	                              package(cs691f)";
 	   target
 	])
 
@@ -59,13 +61,33 @@ let run (main_module : string) (args : string list) =
 	assert_file_exists cmd;
 	check_code (run_process cmd args)
 
+let help () =
+	let pr s = print_string s; print_newline () in
+	pr "Usage: cs691f COMMMAND [args]";
+	pr "";
+	pr "  cs691f compile File    Compile File.ml";
+	pr "  cs691f run File        Run the program File.ml.";
+	pr "  cs691f test File       Run the tests in Module.ml.";
+	pr "  cs691f clean           Removes files created by 'cs691f compile'.";
+	pr "  cs691f help            Displays this message."
+
+(* Use OCAMLRUNPARAM to enable stack traces, unless you've set your own. *)
+let config_env () =
+	try
+		let _ = Unix.getenv "OCAMLRUNPARAM" in
+		()
+	with
+	| Not_found -> Unix.putenv "OCAMLRUNPARAM" "b"
+
 let () = 
+  config_env ();
   try
 	  match Array.to_list Sys.argv with
+	  | [ _; "help" ]  -> help ()
 	  | [ _; "clean" ] -> clean ()
-	  | [ _; "build"; target ] -> build target
+	  | [ _; "compile"; target ] -> build target
 	  | [ _; "test"; target ] -> test target
 	  | _ :: "run" :: target :: args -> run target args
-	  | _ -> Format.printf "Invalid arguments\n%!"
+	  | _ -> print_string "Invalid arguments.\n"; help ()
 	with File_not_found filename ->
 		Format.printf "Could not find the file %s.\n%!" filename
