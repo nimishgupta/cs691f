@@ -5,7 +5,7 @@ Version:         0.1
 Synopsis:        Software for CS691f
 Authors:         Arjun Guha
 License:         LGPL
-Plugins:         META (0.3)
+Plugins:         META (0.3), DevFiles (0.3)
 BuildTools:      ocamlbuild, camlp4o, ocamldoc, menhir
 
 Library cs691f  
@@ -13,13 +13,13 @@ Library cs691f
   BuildDepends:
     oUnit
   InternalModules:
+    PL_util,  
     Lexparse_util,
     Arith_lexer,
     Arith_parser,
     HOF_parser,
     HOF_lexer
   Modules:
-    PL_util,
     Arith_syntax,
     Arith_util,
     HOF_syntax,
@@ -44,3 +44,13 @@ Test all_tests
   Command: $testtool inline-test-runner dummy
   Run$: flag(tests)
   TestTools: testtool
+
+Document doc
+  Title: CS691F Support Code Documentation
+  Type: ocamlbuild (0.3)
+  XOCamlBuildPath: lib
+  XOCamlBuildModules:
+    Arith_syntax,
+    Arith_util,
+    HOF_syntax,
+    HOF_util
