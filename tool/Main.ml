@@ -70,7 +70,7 @@ let help () =
 	let pr s = print_string s; print_newline () in
 	pr "Usage: cs691f COMMMAND [args]";
 	pr "";
-	pr "  cs691f compile File    Compile File.ml";
+	pr "  cs691f compile File    Compile File.ml.";
 	pr "  cs691f run File        Run the program File.ml.";
 	pr "  cs691f test File       Run the tests in Module.ml.";
 	pr "  cs691f clean           Removes files created by 'cs691f compile'.";
