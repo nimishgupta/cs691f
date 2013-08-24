@@ -1,6 +1,14 @@
 open Arith_syntax
 open Arith_util
 
+let pp_test (s : string) : bool =
+  match parse_exp_from_string s with
+    | ParseError _ -> failwith "error parsing string"
+    | Exp e ->
+      let s' = string_of_exp e in
+      if s = s' then true
+      else (Format.printf "Parsed string:\n%s\nPretty-printed:\n%s\n%!" s s'; false)
+
 TEST "positive numerals" =
 	parse_exp_from_string "10" = Exp (Int 10)
 
@@ -53,3 +61,24 @@ TEST "let reserved (identifier)" =
   match parse_exp_from_string "(let + 10)" with
     | ParseError _ -> true
     | _ -> false
+
+TEST "prety-print parentheses around +" =
+  pp_test "1 + (2 + 3)"
+
+TEST "do not parenthesize" =
+  pp_test "1 + 2 * 3 + 4"
+
+TEST "precendence" =
+  pp_test "1 + (2 * 3) + 4"
+
+TEST "line break" = pp_test "\
+1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 
+1"
+
+TEST "line break" = pp_test "\
+1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) * 
+1 + (2 + (3 + (4 + 5)))"
+
+TEST "line break" = pp_test "\
+1 + (2 + (3 + (4 + 5))) * (1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) * 
+1 + (2 + (3 + (4 + 5))))"
