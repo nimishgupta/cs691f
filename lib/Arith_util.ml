@@ -37,26 +37,27 @@ module Format = struct
   let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit = match e with
     | Let (x, e1, e2) -> begin match cxt with
       | Top ->
-        fprintf fmt "@[let %s = %a in %a@]" x (exp Top) e1 (exp Top) e2
+        fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
+        (exp Top) e1 (exp Top) e2
       | _ ->
-        fprintf fmt "@[(@[let %s = %a in %a@])@]" x (exp Top) e1 (exp Top) e2
+        fprintf fmt "@[(@[<v>let @[%s =@;<1 2>%a in@]@ %a@])@]" x (exp Top) e1 (exp Top) e2
     end
     | Mul (e1, e2) -> begin match cxt with
       | LeftAdd
       | RightAdd
       | RightMul ->
-        fprintf fmt "@[(@[%a * %a@])@]" (exp LeftMul) e1 (exp RightMul) e2
+        fprintf fmt "@[(@[%a *@ %a@])@]" (exp LeftMul) e1 (exp RightMul) e2
       | Top
-      | LeftMul -> fprintf fmt "@[%a * %a@]" (exp LeftMul) e1 (exp RightMul) e2
+      | LeftMul -> fprintf fmt "@[%a *@ %a@]" (exp LeftMul) e1 (exp RightMul) e2
     end
     | Add (e1, e2) -> begin match cxt with
       | Top
       | LeftMul
       | RightMul
       | LeftAdd ->
-        fprintf fmt "@[%a + %a@]" (exp LeftAdd) e1 (exp RightAdd) e2
+        fprintf fmt "@[%a +@ %a@]" (exp LeftAdd) e1 (exp RightAdd) e2
       | RightAdd ->
-        fprintf fmt "@[(@[%a + %a@])@]" (exp LeftAdd) e1 (exp RightAdd) e2
+        fprintf fmt "@[(@[%a +@ %a@])@]" (exp LeftAdd) e1 (exp RightAdd) e2
     end
     | Int n -> fprintf fmt "@[%d@]" n
     | Id x -> fprintf fmt "@[%s@]" x
