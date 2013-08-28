@@ -9,3 +9,5 @@ val string_of_pos : pos -> string
     [make_string_of f] returns a function that pretty-prints values to
     strings. *)
 val make_string_of  : (Format.formatter -> 'a -> unit) -> 'a -> string
+
+val parens : bool -> Format.formatter -> (unit -> unit) -> unit

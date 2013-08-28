@@ -34,33 +34,25 @@ module Format = struct
      or not we need parentheses.  *)
   type cxt = Top | LeftMul | RightMul | LeftAdd | RightAdd
 
-  let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit = match e with
-    | Let (x, e1, e2) -> begin match cxt with
-      | Top ->
-        fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
+  let print_paren (cxt : cxt) (e : exp) : bool = match e with
+    | Let _ -> cxt > Top
+    | Mul _ -> cxt > LeftMul
+    | Add _ -> cxt > LeftAdd
+    | _ -> false
+
+  let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit = 
+    parens (print_paren cxt e) fmt (fun () ->
+    match e with
+    | Let (x, e1, e2) ->
+      fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
         (exp Top) e1 (exp Top) e2
-      | _ ->
-        fprintf fmt "@[(@[<v>let @[%s =@;<1 2>%a in@]@ %a@])@]" x (exp Top) e1 (exp Top) e2
-    end
-    | Mul (e1, e2) -> begin match cxt with
-      | LeftAdd
-      | RightAdd
-      | RightMul ->
-        fprintf fmt "@[(@[%a *@ %a@])@]" (exp LeftMul) e1 (exp RightMul) e2
-      | Top
-      | LeftMul -> fprintf fmt "@[%a *@ %a@]" (exp LeftMul) e1 (exp RightMul) e2
-    end
-    | Add (e1, e2) -> begin match cxt with
-      | Top
-      | LeftMul
-      | RightMul
-      | LeftAdd ->
+    | Mul (e1, e2) ->
+      fprintf fmt "@[%a *@ %a@]" (exp LeftMul) e1 (exp RightMul) e2
+    | Add (e1, e2) -> 
         fprintf fmt "@[%a +@ %a@]" (exp LeftAdd) e1 (exp RightAdd) e2
-      | RightAdd ->
-        fprintf fmt "@[(@[%a +@ %a@])@]" (exp LeftAdd) e1 (exp RightAdd) e2
-    end
     | Int n -> fprintf fmt "@[%d@]" n
-    | Id x -> fprintf fmt "@[%s@]" x
+    | Id x -> fprintf fmt "@[%s@]" x)
+
 
 end
 

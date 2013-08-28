@@ -1,4 +1,5 @@
 type pos = Lexing.position
+type formatter = Format.formatter
 
 let string_of_pos pos = 
   let open Lexing in
@@ -17,3 +18,14 @@ let make_string_of formatter x =
   formatter fmt x;
   fprintf fmt "@?";
   Buffer.contents buf
+
+let parens (on : bool) (fmt : formatter) (thunk : unit -> unit) : unit =
+  match on with
+    | false -> thunk ()
+    | true ->
+      let open Format in
+      pp_open_box fmt 0;
+      pp_print_string fmt "(";
+      thunk ();
+      pp_print_string fmt ")";
+      pp_close_box fmt ()
