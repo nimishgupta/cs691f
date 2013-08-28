@@ -32,84 +32,57 @@ module Format = struct
 
   (* Indicates the immediately surrounding expression, which determines whether
      or not we need parentheses. *)
-  type cxt = Top | AddL | AddR | MulL | MulR | EqLt | Fun
+  type cxt = Top | AddL | AddR | MulL | MulR | Fun
+
+  let print_paren (cxt : cxt) (e : exp) : bool = match e with
+    | Let _ -> cxt > Top
+    | Mul _ -> cxt > MulL
+    | Add _ -> cxt > AddL
+    | Sub _ -> cxt > AddL
+    | _ -> false
 
   let rec id_list (fmt : formatter) (ids : id list) = match ids with
     | [] -> ()
     | [x] -> fprintf fmt "%s" x
     | x :: xs ->fprintf fmt "[@%s, %a@]" x id_list xs
 
-  let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit = match e with
+  let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit =
+    parens (print_paren cxt e) fmt (fun () ->
+     match e with
     | Int n -> fprintf fmt "@[%d@]" n
     | Id x -> fprintf fmt "@[%s@]" x
-    | True -> pp_print_string fmt "true"
-    | False -> pp_print_string fmt "false"  
-    | Op2 (ADD, e1, e2) -> begin match cxt with
-      | Fun | AddR ->
-        fprintf fmt "@[(@[%a + %a@])@]" (exp AddL) e1 (exp AddR) e2
-      | _ ->
-        fprintf fmt "@[%a + %a@]" (exp AddL) e1 (exp AddR) e2
-      end
-    | Op2 (SUB, e1, e2) -> begin match cxt with
-      | Fun | AddR ->
-        fprintf fmt "@[(@[%a - %a@])@]" (exp AddL) e1 (exp AddR) e2
-      | _ ->
-        fprintf fmt "@[%a - %a@]" (exp AddL) e1 (exp AddR) e2
-      end
-    | Op2 (MUL, e1, e2) -> begin match cxt with
-      | Top | MulL | EqLt ->
-        fprintf fmt "@[%a * %a@]" (exp MulL) e1 (exp MulR) e2
-      | _ ->
-        fprintf fmt "@[(@[%a * %a@])@]" (exp MulL) e1 (exp MulR) e2
-      end
-    | Op2 (EQ, e1, e2) -> begin match cxt with
-      | Top -> fprintf fmt "@[%a = %a@]" (exp EqLt) e1 (exp EqLt) e2
-      | _ -> fprintf fmt "@[(@[%a = %a@])@]" (exp EqLt) e1 (exp EqLt) e2
-      end
-    | Op2 (LT, e1, e2) -> begin match cxt with
-      | Top -> fprintf fmt "@[%a < %a@]" (exp EqLt) e1 (exp EqLt) e2
-      | _ -> fprintf fmt "@[(@[%a < %a@])@]" (exp EqLt) e1 (exp EqLt) e2
-      end
-
-    | If (e1, e2, e3) -> begin match cxt with
-      | Top ->
-        fprintf fmt "@[if %a then %a else %a@]" (exp Top) e1 (exp Top) e2
-          (exp Top) e3
-      | _ -> 
-        fprintf fmt "@[(@[if %a then %a else %a@])@]" (exp Top) e1 (exp Top) e2
-          (exp Top) e3
-      end
-    | Lambda (xs, e) -> begin match cxt with
-      | Top -> lambda fmt (xs, e)
-      | _ -> fprintf fmt "@[(%a)@]" lambda (xs, e)
-      end
-    | Apply (fn, args) -> begin match cxt with
-      | Top -> apply fmt (fn, args)
-      | _ -> fprintf fmt "@[(%a)@]" apply (fn, args)
-      end
-
-  and lambda (fmt : formatter) ((xs,e) : id list * exp) : unit =
-    fprintf fmt "@[lambda (%a) . %a" id_list xs (exp Top) e
-
-  and apply (fmt : formatter) ((fn,args) : exp * exp list) : unit =
-    fprintf fmt "@[%a(%a)@]" (exp Fun) fn exp_list args
+    | Add (e1, e2) ->
+        fprintf fmt "@[%a +@ %a@]" (exp AddL) e1 (exp AddR) e2
+    | Sub (e1, e2) ->
+        fprintf fmt "@[%a -@ %a@]" (exp AddL) e1 (exp AddR) e2
+    | Mul (e1, e2) ->
+        fprintf fmt "@[%a *@ %a@]" (exp MulL) e1 (exp MulR) e2
+    | Let (x, e1, e2) ->
+      fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
+        (exp Top) e1 (exp Top) e2        
+    | If0 (e1, e2, e3) ->
+        fprintf fmt "@[if %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
+          (exp Top) e1 (exp Top) e2 (exp Top) e3
+    | Lambda (xs, e) ->
+      fprintf fmt "@[lambda (%a) .@;<1 2>%a" id_list xs (exp Top) e
+    | Apply (fn, args) ->
+      fprintf fmt "@[%a(%a)@]" (exp Fun) fn exp_list args)
 
   and exp_list (fmt : formatter) (exps : exp list) : unit = match exps with
     | [] -> ()
     | [e] -> exp Top fmt e
-    | e :: es -> fprintf fmt "@[%a, %a@]" (exp Top) e exp_list es
+    | e :: es -> fprintf fmt "@[%a,@;<1 0>%a@]" (exp Top) e exp_list es
 
   let rec value (fmt : formatter) (value : value) : unit = match value with
     | IntVal n -> fprintf fmt "%d" n
-    | BoolVal b -> fprintf fmt "%b" b
     | ClosureVal (env_, xs, e) ->
-      fprintf fmt "@[<%a> %a@]" env env_ lambda (xs, e)
+      fprintf fmt "@[<%a> lambda (%a) . %a@]" env env_ id_list xs (exp Top) e
 
   and env (fmt : formatter) (binds : (id * value) list) : unit =
     match binds with
       | [] -> ()
       | [(x,v)] -> fprintf fmt "@[%s = %a]" x value v
-      | (x,v) :: binds' -> fprintf fmt "@[%s = %a; %a]" x value v env binds'
+      | (x,v) :: binds' -> fprintf fmt "@[%s = %a;@;<1 0>%a]" x value v env binds'
 
 end
 

@@ -5,7 +5,7 @@
 }
 
 let blank = [ ' ' '\t' ]
-let id = ['a'-'z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_' '\'']*
+let id = ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '0'-'9' '_']*
 let decimal = '-'? ((['1'-'9']['0'-'9']*) | ['0'-'9'])
 
 rule token = parse
@@ -22,17 +22,16 @@ rule token = parse
   | "." { DOT }
   | "+" { PLUS }
   | "-" { MINUS }  
-  | "==" { EQUALSEQUALS }  
   | "*" { STAR }
-  | "<" { LESSTHAN }
+  | "=" { EQUALS }
   | "lambda" { LAMBDA }
-  | "if" { IF }
+  | "if0" { IF0 }
   | "then" { THEN }
   | "else" { ELSE }
-  | "true" { TRUE }
-  | "false" { FALSE }
+  | "let" { LET }
+  | "in" { IN }
   | eof { EOF } 
-  | id as x { ID x } (* by going last, we lex keywords instead of variables *)
+  | id as x { ID x }
 
 and block_comment = parse
   | "*/" { token lexbuf }

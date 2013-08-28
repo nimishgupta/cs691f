@@ -2,11 +2,18 @@
 
 open HOF_syntax
 
+let rec unique_ids (ids : id list) : unit =
+  match ids with
+    | [] -> ()
+    | x :: ids' -> 
+      if List.mem x ids then raise (Lexparse_util.Error "duplicate identifier")
+      else unique_ids ids'
+
 %}
 
-%token LPAREN RPAREN COMMA DOT
-%token PLUS MINUS EQUALSEQUALS LESSTHAN STAR
-%token LAMBDA IF THEN ELSE TRUE FALSE
+%token LPAREN RPAREN COMMA DOT EQUALS
+%token PLUS MINUS STAR
+%token LET IN LAMBDA IF0 THEN ELSE
 %token EOF
 %token<string> ID
 %token<int> INT
@@ -34,30 +41,24 @@ ids :
 
 atom :
   | INT { Int $1 }
-  | TRUE { True }
-  | FALSE { False }
   | ID { Id $1 }
   | LPAREN exp RPAREN { $2 }
 
 add :
   | atom { $1 }
-  | add MINUS atom { Op2 (SUB, $1, $3) }
-  | add PLUS atom { Op2 (ADD, $1, $3) }
+  | add MINUS atom { Sub ($1, $3) }
+  | add PLUS atom { Add ($1, $3) }
 
 mul :
   | add { $1 }
-  | mul STAR add { Op2 (MUL, $1, $3) }
-
-eq : 
-  | mul { $1 }
-  | mul EQUALSEQUALS mul { Op2 (EQ, $1, $3) } 
-  | mul LESSTHAN mul { Op2 (LT, $1, $3) }
+  | mul STAR add { Mul ($1, $3) }
 
 exp :
-  | eq { $1 }
+  | mul { $1 }
   | atom LPAREN args RPAREN { Apply ($1, $3) }
-  | IF exp THEN exp ELSE exp { If ($2, $4, $6) }
-  | LAMBDA LPAREN ids RPAREN DOT exp { Lambda ($3, $6) }
+  | IF0 exp THEN exp ELSE exp { If0 ($2, $4, $6) }
+  | LAMBDA LPAREN ids RPAREN DOT exp { unique_ids $3; Lambda ($3, $6) }
+  | LET ID EQUALS exp IN exp { Let ($2, $4, $6) }
 
 program :
   | exp EOF { $1 }

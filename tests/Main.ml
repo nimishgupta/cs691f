@@ -1,1 +1,2 @@
 open Arith_tests
+open HOF_tests
