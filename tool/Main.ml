@@ -10,10 +10,6 @@ let assert_file_exists (filename : string) : unit =
 	 If the process is killed or stopped, prints a warning returns -1. *)
 let run_process (filename : string) (args : string list) : int =
 	let open Unix in
-	(* TODO(arjun): printed string should be shell-escaped so you can copy it
-	   to the terminal. *)
-  print_string (String.concat " " (filename :: args));
-	print_newline (); 
 	let pid = create_process filename (Array.of_list (filename :: args))
 	  stdin stdout stderr in
 	let (_, exit_status) = Unix.waitpid [] pid in
@@ -33,14 +29,14 @@ let check_code (return_code : int) : unit =
 
 (* Use ocamlbuild to clean. *)
 let clean () : unit =
-  check_code (Sys.command "ocamlbuild -classic-display -clean")
+  check_code (Sys.command "ocamlbuild -clean")
 
 (* Uses the oUnit and cs691f packages and the oUnit syntax extension. *)
 let build (main_module : string) : unit =
 	assert_file_exists (main_module ^ ".ml");
 	let target = Format.sprintf "%s.d.byte" main_module in
   check_code (run_process "ocamlbuild" [
-  	"-use-ocamlfind"; "-classic-display"; "-no-links";
+  	"-use-ocamlfind"; "-no-links";
 	   "-tag-line"; "<*.ml{,i}> : syntax(camlp4o), \
 	   	                          package(pa_ounit.syntax), \
 	                              package(oUnit), \
