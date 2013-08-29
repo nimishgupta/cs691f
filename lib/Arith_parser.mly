@@ -21,17 +21,17 @@ atom :
   | ID { Id $1 }
   | LPAREN exp RPAREN { $2 }
 
-add :
-  | atom { $1 }
-  | add PLUS atom { Add ($1, $3) }
-
 mul :
-  | add { $1 }
-  | mul STAR add { Mul ($1, $3) }
+  | atom { $1 }
+  | mul STAR atom { Mul ($1, $3) }
+
+add :
+  | mul { $1 }
+  | add PLUS mul { Add ($1, $3) }
 
 exp :
   | LET ID EQUALS exp IN exp { Let ($2, $4, $6) }
-  | mul { $1 }
+  | add { $1 }
 
 program :
   | exp EOF { $1 }

@@ -23,7 +23,7 @@ TEST "negative numerals" =
 
 TEST "+,* precedence" =
   parse_exp_from_string "1 + 2 * 3 + 4" =
-    Exp (Mul (Add (Int 1, Int 2), Add (Int 3, Int 4)))
+    Exp (Add (Add (Int 1, Mul (Int 2, Int 3)), Int 4))
 
 TEST "let nested in body" =
   parse_exp_from_string "let x = 10 in let y = 11 in x" =
@@ -69,19 +69,19 @@ TEST "do not parenthesize" =
   pp_test "1 + 2 * 3 + 4"
 
 TEST "precendence" =
-  pp_test "1 + (2 * 3) + 4"
+  pp_test "(1 + 2) * (3 + 4)"
 
 TEST "line break" = pp_test "\
 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
 1"
 
-TEST "line break" = pp_test "\
-1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) *
-1 + (2 + (3 + (4 + 5)))"
+TEST "margin for *" = pp_test "\
+(1 + 2 + 3 + 4 + 5) * (1 + 2 + 3 + 4 + 5) * (1 + 2 + 3 + 4 + 5) *
+(1 + 2 + 3 + 4 + 5)"
 
-TEST "line break" = pp_test "\
-1 + (2 + (3 + (4 + 5))) *
-(1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))))"
+TEST "margin for +" = pp_test "\
+1 * 2 * 3 * 4 * 5 + 1 * 2 * 3 * 4 * 5 + 1 * 2 * 3 * 4 * 5 + 1 * 2 * 3 * 4 * 5 +
+1 * 2 * 3 * 4 * 5"
 
 TEST "let nesting" = pp_test "\
 let x = 10 in
