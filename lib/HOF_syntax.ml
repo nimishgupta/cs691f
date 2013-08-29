@@ -1,5 +1,7 @@
 type id = string
 
+type field = string
+
 type exp =
   | Int of int
   | Add of exp * exp
@@ -10,6 +12,9 @@ type exp =
   | If0 of exp * exp * exp
   | Lambda of id list * exp
   | Apply of exp * exp list
+  | Record of (field * exp) list
+  | SetField of exp * field * exp
+  | GetField of exp * field
 
 type value =
   | IntVal of int

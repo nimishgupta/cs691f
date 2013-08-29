@@ -104,3 +104,26 @@ TEST "binary function parsing" =
 TEST "curried function parse-pretty" =
   pp_test "lambda(x) . lambda(y) . x + y"
 
+TEST "duplicate identifier" =
+  match parse_exp_from_string "lambda(x,x) . x" with
+  | Exp _ -> false
+  | ParseError _ ->  true
+
+TEST "record parse-pretty" = pp_test "{ x: 10, y: 20 }"
+
+TEST "empty record parse-pretty" = pp_test "{ }"
+
+TEST "record update parse-pretty" = pp_test "x[y -> 10]"
+
+TEST "record update chain" = pp_test "x[y -> 10][y -> 20]"
+
+TEST "record get chain" = pp_test "x.y.z.a.b.c"
+
+TEST "long record" = pp_test "\
+{
+  foooooooooooo: 0,
+  foooooooooooo1: 0,
+  foooooooooooo2: 0,
+  foooooooooooo3: 0,
+  foooooooooooo4: 0
+}"

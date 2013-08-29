@@ -11,8 +11,8 @@ let rec unique_ids (ids : id list) : unit =
 
 %}
 
-%token LPAREN RPAREN COMMA DOT EQUALS
-%token PLUS MINUS STAR
+%token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK COLON COMMA DOT EQUALS
+%token PLUS MINUS STAR RARROW
 %token LET IN LAMBDA IF0 THEN ELSE
 %token EOF
 %token<string> ID
@@ -39,10 +39,20 @@ ids :
   | { [] }
   | ids1 { $1 }
 
+fields1 :
+  | ID COLON exp { [($1, $3)] }
+  | ID COLON exp COMMA fields1 { ($1,$3) :: $5 }
+
+fields :
+  | { [] }
+  | fields1 { $1 }
+
 atom :
   | INT { Int $1 }
   | ID { Id $1 }
   | LPAREN exp RPAREN { $2 }
+  | atom DOT ID { GetField ($1, $3) }
+  | atom LBRACK ID RARROW exp RBRACK { SetField ($1, $3, $5) }
 
 mul :
   | atom { $1 }
@@ -56,6 +66,7 @@ add :
 exp :
   | add { $1 }
   | atom LPAREN args RPAREN { Apply ($1, $3) }
+  | LBRACE fields RBRACE { Record $2 }
   | IF0 exp THEN exp ELSE exp { If0 ($2, $4, $6) }
   | LAMBDA LPAREN ids RPAREN DOT exp { unique_ids $3; Lambda ($3, $6) }
   | LET ID EQUALS exp IN exp { Let ($2, $4, $6) }

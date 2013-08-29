@@ -18,12 +18,18 @@ rule token = parse
   | decimal as n { INT (int_of_string n) } 
   | "(" { LPAREN }
   | ")" { RPAREN }
+  | "{" { LBRACE }
+  | "}" { RBRACE }
+  | "[" { LBRACK }
+  | "]" { RBRACK }
   | "," { COMMA }
   | "." { DOT }
+  | ":" { COLON }
   | "+" { PLUS }
   | "-" { MINUS }  
   | "*" { STAR }
   | "=" { EQUALS }
+  | "->" { RARROW }
   | "lambda" { LAMBDA }
   | "if0" { IF0 }
   | "then" { THEN }
