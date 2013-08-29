@@ -32,9 +32,12 @@ module Format = struct
 
   (* Indicates the immediately surrounding expression, which determines whether
      or not we need parentheses. *)
-  type cxt = Top | AddL | AddR | MulL | MulR | Field
+  type cxt = Top | Field | AndL | AndR | OrL | OrR | CmpL | CmpR 
+    | AddL | AddR | MulL | MulR  | List | Atom
+
 
   let print_paren (cxt : cxt) (e : exp) : bool = match e with
+    | Cons _ -> cxt > List
     | Record _ -> false
     | Let _ -> cxt > Top
     | Mul _ -> cxt > MulL
@@ -64,7 +67,7 @@ module Format = struct
       fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
         (exp Top) e1 (exp Top) e2        
     | If0 (e1, e2, e3) ->
-        fprintf fmt "@[if %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
+        fprintf fmt "@[ifzero %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
           (exp Top) e1 (exp Top) e2 (exp Top) e3
     | Lambda (xs, e) ->
       fprintf fmt "@[<hv 2>lambda(%a) .@ %a" id_list xs (exp Top) e
@@ -76,7 +79,17 @@ module Format = struct
       fprintf fmt "@[%a[@[%s ->@;<1 2>%a@]]@]" 
       (exp Field) obj fld (exp Top) value
     | Record flds ->
-      fprintf fmt "@[<hv>{%a@ }@]" fields flds)
+      fprintf fmt "@[<hv>{%a@ }@]" fields flds
+    | If (e1, e2, e3) ->
+        fprintf fmt "@[if %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
+          (exp Top) e1 (exp Top) e2 (exp Top) e3
+    | And (e1, e2) -> fprintf fmt "@[%a &&@ %a]" (exp AndL) e1 (exp AndR) e2
+    | Or (e1, e2) -> fprintf fmt "@[%a ||@ %a]" (exp OrL) e1 (exp OrR) e2
+    | IntEq (e1, e2) -> fprintf fmt "@[%a ==@ %a]" (exp CmpL) e1 (exp CmpR) e2
+    | Empty -> fprintf fmt "empty"
+    | IsEmpty e -> fprintf fmt "@[<hv 2>empty(@,%a@,)@]" (exp Top) e
+    | Cons (e1, e2) ->
+      fprintf fmt "@[<hv>%a@ ::@ %a@]" (exp Atom) e1 (exp List) e2)
 
   and exp_list (fmt : formatter) (exps : exp list) : unit = match exps with
     | [] -> ()

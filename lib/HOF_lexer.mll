@@ -30,12 +30,23 @@ rule token = parse
   | "*" { STAR }
   | "=" { EQUALS }
   | "->" { RARROW }
+  | "::" { COLONCOLON }
+  | "&&" { AMPAMP }
+  | "||" { PIPEPIPE }
+  | "==" { EQEQ }
+  | "head" { HEAD }
+  | "tail" { TAIL }
+  | "empty" { EMPTY }
+  | "empty?" { EMPTYQ }
   | "lambda" { LAMBDA }
-  | "if0" { IF0 }
+  | "ifzero" { IF0 }
+  | "if" { IF }
   | "then" { THEN }
   | "else" { ELSE }
   | "let" { LET }
   | "in" { IN }
+  | "true" { TRUE }
+  | "false" { FALSE }
   | eof { EOF } 
   | id as x { ID x }
 
