@@ -3,7 +3,7 @@ open HOF_util
 
 let pp_test (s : string) : bool =
   match parse_exp_from_string s with
-    | ParseError _ -> failwith "error parsing string"
+    | ParseError s -> failwith ("error parsing string " ^ s)
     | Exp e ->
       let s' = string_of_exp e in
       if s = s' then true
@@ -92,3 +92,15 @@ let x = 10 in
 10"
 
 (* End of tests from Arith_tests.ml *)
+
+TEST "thunk parse-pretty" = pp_test "lambda() . 90"
+
+TEST "unary function parsing" = 
+  parse_exp_from_string "lambda(x) . 90" = Exp (Lambda (["x"], Int 90))
+
+TEST "binary function parsing" = 
+  parse_exp_from_string "lambda(x, y) . 90" = Exp (Lambda (["x"; "y"], Int 90))
+
+TEST "curried function parse-pretty" =
+  pp_test "lambda(x) . lambda(y) . x + y"
+

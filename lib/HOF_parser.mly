@@ -6,7 +6,7 @@ let rec unique_ids (ids : id list) : unit =
   match ids with
     | [] -> ()
     | x :: ids' -> 
-      if List.mem x ids then raise (Lexparse_util.Error "duplicate identifier")
+      if List.mem x ids' then raise (Lexparse_util.Error "duplicate identifier")
       else unique_ids ids'
 
 %}

@@ -64,7 +64,7 @@ module Format = struct
         fprintf fmt "@[if %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
           (exp Top) e1 (exp Top) e2 (exp Top) e3
     | Lambda (xs, e) ->
-      fprintf fmt "@[lambda (%a) .@;<1 2>%a" id_list xs (exp Top) e
+      fprintf fmt "@[lambda(%a) .@;<1 2>%a" id_list xs (exp Top) e
     | Apply (fn, args) ->
       fprintf fmt "@[%a(%a)@]" (exp Fun) fn exp_list args)
 
@@ -76,7 +76,7 @@ module Format = struct
   let rec value (fmt : formatter) (value : value) : unit = match value with
     | IntVal n -> fprintf fmt "%d" n
     | ClosureVal (env_, xs, e) ->
-      fprintf fmt "@[<%a> lambda (%a) . %a@]" env env_ id_list xs (exp Top) e
+      fprintf fmt "@[<%a> lambda(%a) . %a@]" env env_ id_list xs (exp Top) e
 
   and env (fmt : formatter) (binds : (id * value) list) : unit =
     match binds with
