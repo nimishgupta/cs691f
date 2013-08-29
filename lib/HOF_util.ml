@@ -1,10 +1,10 @@
-open HOF_syntax
+open HOF_sugar
 open PL_util
 
 module Parsers = Lexparse_util.MakeParsers (struct
   exception ParseError = HOF_parser.Error
   type token = HOF_parser.token
-  type exp = HOF_syntax.exp
+  type exp = HOF_sugar.exp
   let parser = HOF_parser.program
   let lexer = HOF_lexer.token
 end)
@@ -90,27 +90,10 @@ module Format = struct
     | (x,v) :: rest -> 
       fprintf fmt "@;<1 2>@[%s:@ %a,@]%a" x (exp Top) v fields rest
 
-  let rec value (fmt : formatter) (value : value) : unit = match value with
-    | IntVal n -> fprintf fmt "%d" n
-    | ClosureVal (env_, xs, e) ->
-      fprintf fmt "@[<%a> lambda(%a) . %a@]" env env_ id_list xs (exp Top) e
-
-  and env (fmt : formatter) (binds : (id * value) list) : unit =
-    match binds with
-      | [] -> ()
-      | [(x,v)] -> fprintf fmt "@[%s = %a]" x value v
-      | (x,v) :: binds' -> fprintf fmt "@[%s = %a;@;<1 0>%a]" x value v env binds'
-
 end
 
 let format_exp = Format.exp Format.Top
 
-let format_value = Format.value
-
 let string_of_exp (e : exp) : string = make_string_of format_exp e
 
 let print_exp (e : exp) : unit = print_string (string_of_exp e)
-
-let string_of_value (v : value) : string = make_string_of format_value v
-
-let print_value (v : value) : unit = print_string (string_of_value v)

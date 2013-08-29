@@ -53,4 +53,5 @@ Document doc
     Arith_syntax,
     Arith_util,
     HOF_syntax,
+    HOF_sugar,
     HOF_util

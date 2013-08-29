@@ -13,12 +13,9 @@ type exp =
   | Id of id
   | If0 of exp * exp * exp
   | Lambda of id list * exp
+    (** Assume that all identifiers are distinct. *)
   | Apply of exp * exp list
   | Record of (field * exp) list
+    (** Assume that all field names are distinct. *)
   | SetField of exp * field * exp
   | GetField of exp * field
-
-type value =
-  | IntVal of int
-  | ClosureVal of (id * value) list * id list * exp
-

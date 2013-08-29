@@ -1,6 +1,6 @@
 %{
 
-open HOF_syntax
+open HOF_sugar
 
 let rec unique_ids (ids : id list) : unit =
   match ids with
@@ -19,7 +19,7 @@ let rec unique_ids (ids : id list) : unit =
 %token<int> INT
 
 %start program
-%type <HOF_syntax.exp> program
+%type <HOF_sugar.exp> program
 
 %%
 
@@ -53,6 +53,7 @@ atom :
   | LPAREN exp RPAREN { $2 }
   | atom DOT ID { GetField ($1, $3) }
   | atom LBRACK ID RARROW exp RBRACK { SetField ($1, $3, $5) }
+  | atom LPAREN args RPAREN { Apply ($1, $3) }
 
 mul :
   | atom { $1 }
@@ -65,7 +66,6 @@ add :
 
 exp :
   | add { $1 }
-  | atom LPAREN args RPAREN { Apply ($1, $3) }
   | LBRACE fields RBRACE { Record $2 }
   | IF0 exp THEN exp ELSE exp { If0 ($2, $4, $6) }
   | LAMBDA LPAREN ids RPAREN DOT exp { unique_ids $3; Lambda ($3, $6) }

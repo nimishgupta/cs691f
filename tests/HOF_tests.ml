@@ -1,4 +1,4 @@
-open HOF_syntax
+open HOF_sugar
 open HOF_util
 
 let pp_test (s : string) : bool =
