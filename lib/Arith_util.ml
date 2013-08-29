@@ -30,33 +30,33 @@ module Format = struct
 
   open Format
 
-  (* Indicates the immediately surrounding expression, which determines whether
-     or not we need parentheses.  *)
-  type cxt = Top | LeftAdd | RightAdd | LeftMul | RightMul
+  (* The concrete production that would have parsed the expression. *)
+  type cxt = ATOM | MUL | ADD | EXP
 
   let print_paren (cxt : cxt) (e : exp) : bool = match e with
-    | Let _ -> cxt > Top
-    | Mul _ -> cxt > LeftMul
-    | Add _ -> cxt > LeftAdd
-    | _ -> false
+    | Let _ -> false
+    | Id _ -> false
+    | Int _ -> false
+    | Mul _ -> cxt < MUL
+    | Add _ -> cxt < ADD
 
   let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit = 
     parens (print_paren cxt e) fmt (fun () ->
     match e with
     | Let (x, e1, e2) ->
       fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
-        (exp Top) e1 (exp Top) e2
+        (exp EXP) e1 (exp EXP) e2
     | Mul (e1, e2) ->
-      fprintf fmt "@[%a *@ %a@]" (exp LeftMul) e1 (exp RightMul) e2
+      fprintf fmt "@[%a *@ %a@]" (exp MUL) e1 (exp ATOM) e2
     | Add (e1, e2) -> 
-        fprintf fmt "@[%a +@ %a@]" (exp LeftAdd) e1 (exp RightAdd) e2
+        fprintf fmt "@[%a +@ %a@]" (exp ADD) e1 (exp MUL) e2
     | Int n -> fprintf fmt "@[%d@]" n
     | Id x -> fprintf fmt "@[%s@]" x)
 
 
 end
 
-let format_exp = Format.exp Format.Top
+let format_exp = Format.exp Format.EXP
 
 let string_of_exp (e : exp) : string = make_string_of format_exp e
 
