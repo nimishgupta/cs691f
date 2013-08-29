@@ -23,6 +23,7 @@ Library cs691f
     Arith_syntax,
     Arith_util,
     HOF_syntax,
+    HOF_sugar,
     HOF_util
 
 Executable cs691f
