@@ -21,7 +21,8 @@ type exp =
   | And of exp * exp
   | Or of exp * exp
   | IntEq of exp * exp
-  | Empty of exp
+  | Empty
   | Cons of exp * exp
   | Head of exp
   | Tail of exp
+  | IsEmpty of exp

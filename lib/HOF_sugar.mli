@@ -29,9 +29,12 @@ type exp =
     (** Assume that the sub-expressions evalute to booleans. *)
   | IntEq of exp * exp
     (** Assume that the sub-expressions evaluate to integers. *)
-  | Empty of exp
+  | Empty
   | Cons of exp * exp
   | Head of exp
     (** Assume that the sub-expression is either [Cons] or [Empty]. *)
   | Tail of exp
     (** Assume that the sub-expression is either [Cons] or [Empty]. *)
+  | IsEmpty of exp
+    (** Assume that the sub-expression is either [Cons] or [Empty]. *)
+  
