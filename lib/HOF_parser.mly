@@ -44,17 +44,17 @@ atom :
   | ID { Id $1 }
   | LPAREN exp RPAREN { $2 }
 
-add :
-  | atom { $1 }
-  | add MINUS atom { Sub ($1, $3) }
-  | add PLUS atom { Add ($1, $3) }
-
 mul :
-  | add { $1 }
-  | mul STAR add { Mul ($1, $3) }
+  | atom { $1 }
+  | mul STAR atom { Mul ($1, $3) }
+
+add :
+  | mul { $1 }
+  | add MINUS mul { Sub ($1, $3) }
+  | add PLUS mul { Add ($1, $3) }
 
 exp :
-  | mul { $1 }
+  | add { $1 }
   | atom LPAREN args RPAREN { Apply ($1, $3) }
   | IF0 exp THEN exp ELSE exp { If0 ($2, $4, $6) }
   | LAMBDA LPAREN ids RPAREN DOT exp { unique_ids $3; Lambda ($3, $6) }

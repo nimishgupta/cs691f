@@ -32,7 +32,7 @@ module Format = struct
 
   (* Indicates the immediately surrounding expression, which determines whether
      or not we need parentheses. *)
-  type cxt = Top | AddL | AddR | MulL | MulR | Fun
+  type cxt = Top | AddL | AddR | MulL | MulR  | Fun
 
   let print_paren (cxt : cxt) (e : exp) : bool = match e with
     | Let _ -> cxt > Top

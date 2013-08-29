@@ -9,8 +9,10 @@ let pp_test (s : string) : bool =
       if s = s' then true
       else (Format.printf "Parsed string:\n%s\nPretty-printed:\n%s\n%!" s s'; false)
 
+(* These tests are copied verbatim from Arith_tests.ml *)
+
 TEST "positive numerals" =
-	parse_exp_from_string "10" = Exp (Int 10)
+  parse_exp_from_string "10" = Exp (Int 10)
 
 TEST "overflow OCaml int" =
   let succ_maxint = Int64.to_string (Int64.succ (Int64.of_int max_int)) in
@@ -23,7 +25,7 @@ TEST "negative numerals" =
 
 TEST "+,* precedence" =
   parse_exp_from_string "1 + 2 * 3 + 4" =
-    Exp (Mul (Add (Int 1, Int 2), Add (Int 3, Int 4)))
+    Exp (Add (Add (Int 1, Mul (Int 2, Int 3)), Int 4))
 
 TEST "let nested in body" =
   parse_exp_from_string "let x = 10 in let y = 11 in x" =
@@ -65,26 +67,28 @@ TEST "let reserved (identifier)" =
 TEST "prety-print parentheses around +" =
   pp_test "1 + (2 + 3)"
 
-TEST "precedence 1" =
-  pp_test "(1 + 2) * (3 + 4)"
-
-TEST "precendence 2" =
+TEST "do not parenthesize" =
   pp_test "1 + 2 * 3 + 4"
+
+TEST "precendence" =
+  pp_test "(1 + 2) * (3 + 4)"
 
 TEST "line break" = pp_test "\
 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
 1"
 
-TEST "line break" = pp_test "\
-1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) *
-1 + (2 + (3 + (4 + 5)))"
+TEST "margin for *" = pp_test "\
+(1 + 2 + 3 + 4 + 5) * (1 + 2 + 3 + 4 + 5) * (1 + 2 + 3 + 4 + 5) *
+(1 + 2 + 3 + 4 + 5)"
 
-TEST "line break" = pp_test "\
-1 + (2 + (3 + (4 + 5))) *
-(1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))) * 1 + (2 + (3 + (4 + 5))))"
+TEST "margin for +" = pp_test "\
+1 * 2 * 3 * 4 * 5 + 1 * 2 * 3 * 4 * 5 + 1 * 2 * 3 * 4 * 5 + 1 * 2 * 3 * 4 * 5 +
+1 * 2 * 3 * 4 * 5"
 
 TEST "let nesting" = pp_test "\
 let x = 10 in
 let x = 10 in
 let x = 10 in
 10"
+
+(* End of tests from Arith_tests.ml *)
