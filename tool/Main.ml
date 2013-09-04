@@ -68,7 +68,7 @@ let help () =
 	pr "";
 	pr "  cs691f compile File    Compile File.ml.";
 	pr "  cs691f run File        Run the program File.ml.";
-	pr "  cs691f test File       Run the tests in Module.ml.";
+	pr "  cs691f test File       Run the tests in File.ml.";
 	pr "  cs691f clean           Removes files created by 'cs691f compile'.";
 	pr "  cs691f help            Displays this message."
 
