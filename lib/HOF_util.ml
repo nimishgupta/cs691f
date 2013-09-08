@@ -19,11 +19,11 @@ let parse_from_lexbuf (lexbuf : Lexing.lexbuf) : result =
   try Exp (parse_from_lexbuf lexbuf)
   with Lexparse_util.Error str -> ParseError str
 
-let parse_exp_from_file (file_name : string) : result =
+let parse_from_file (file_name : string) : result =
   try Exp (parse_exp_from_file file_name)
   with Lexparse_util.Error str -> ParseError str
 
-let parse_exp_from_string (str : string) : result = 
+let parse (str : string) : result = 
   parse_from_lexbuf (Lexing.from_string str)
 
 module Format = struct

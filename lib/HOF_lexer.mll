@@ -39,7 +39,7 @@ rule token = parse
   | "empty" { EMPTY }
   | "empty?" { EMPTYQ }
   | "lambda" { LAMBDA }
-  | "ifzero" { IF0 }
+  | "if0" { IF0 }
   | "if" { IF }
   | "then" { THEN }
   | "else" { ELSE }
