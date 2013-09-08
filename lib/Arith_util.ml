@@ -23,7 +23,7 @@ let parse_exp_from_file (file_name : string) : result =
   try Exp (parse_exp_from_file file_name)
   with Lexparse_util.Error str -> ParseError str
 
-let parse_exp_from_string (str : string) : result = 
+let parse (str : string) : result = 
   parse_from_lexbuf (Lexing.from_string str)
 
 module Format = struct
@@ -34,7 +34,7 @@ module Format = struct
   type cxt = ATOM | MUL | ADD | EXP
 
   let print_paren (cxt : cxt) (e : exp) : bool = match e with
-    | Let _ -> false
+    | Let _ -> cxt < EXP
     | Id _ -> false
     | Int _ -> false
     | Mul _ -> cxt < MUL

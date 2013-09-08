@@ -5,7 +5,7 @@ type result =
   | Exp of exp
   | ParseError of string
 
-val parse_exp_from_string : string -> result
+val parse : string -> result
 
 val parse_exp_from_file : string -> result
 
