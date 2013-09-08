@@ -2,12 +2,12 @@ open Arith_syntax
 open PL_util
 
 module Parsers = Lexparse_util.MakeParsers (struct
-  exception ParseError = Arith_parser.Error
-  type token = Arith_parser.token
-  type exp = Arith_syntax.exp
-  let parser = Arith_parser.program
-  let lexer = Arith_lexer.token
-end)
+    exception ParseError = Arith_parser.Error
+    type token = Arith_parser.token
+    type exp = Arith_syntax.exp
+    let parser = Arith_parser.program
+    let lexer = Arith_lexer.token
+  end)
 
 open Parsers
 
@@ -42,16 +42,16 @@ module Format = struct
 
   let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit = 
     parens (print_paren cxt e) fmt (fun () ->
-    match e with
-    | Let (x, e1, e2) ->
-      fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
-        (exp EXP) e1 (exp EXP) e2
-    | Mul (e1, e2) ->
-      fprintf fmt "@[%a *@ %a@]" (exp MUL) e1 (exp ATOM) e2
-    | Add (e1, e2) -> 
-        fprintf fmt "@[%a +@ %a@]" (exp ADD) e1 (exp MUL) e2
-    | Int n -> fprintf fmt "@[%d@]" n
-    | Id x -> fprintf fmt "@[%s@]" x)
+        match e with
+        | Let (x, e1, e2) ->
+          fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
+            (exp EXP) e1 (exp EXP) e2
+        | Mul (e1, e2) ->
+          fprintf fmt "@[%a *@ %a@]" (exp MUL) e1 (exp ATOM) e2
+        | Add (e1, e2) -> 
+          fprintf fmt "@[%a +@ %a@]" (exp ADD) e1 (exp MUL) e2
+        | Int n -> fprintf fmt "@[%d@]" n
+        | Id x -> fprintf fmt "@[%s@]" x)
 
 
 end

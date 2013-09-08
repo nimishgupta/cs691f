@@ -20,29 +20,29 @@ end
 module MakeParsers (Parser : PARSER) = struct
 
   open Parser
-  
+
   let parse_from_lexbuf (lexbuf : Lexing.lexbuf) : 'exp =
     let open Lexing in
     let open Format in  
     try
       parser lexer lexbuf
     with
-      | Failure "lexing: empty token" ->
-         raise (Error (sprintf "lexical error at %s" 
-                         (string_of_pos lexbuf.lex_curr_p)))
-      | Error str ->
-         raise (Error (sprintf "%s (lexical error at %s)" 
-                         str
-                         (string_of_pos lexbuf.lex_curr_p)))
-       | ParseError ->
-         raise (Error (sprintf "parse error at %s; unexpected token %s"
-                        (string_of_pos lexbuf.lex_curr_p)
-                        (lexeme lexbuf)))
+    | Failure "lexing: empty token" ->
+      raise (Error (sprintf "lexical error at %s" 
+                      (string_of_pos lexbuf.lex_curr_p)))
+    | Error str ->
+      raise (Error (sprintf "%s (lexical error at %s)" 
+                      str
+                      (string_of_pos lexbuf.lex_curr_p)))
+    | ParseError ->
+      raise (Error (sprintf "parse error at %s; unexpected token %s"
+                      (string_of_pos lexbuf.lex_curr_p)
+                      (lexeme lexbuf)))
 
-let parse_exp_from_file (file_name : string) : exp =
-  let open Lexing in
-  let lexbuf = from_channel (open_in file_name) in
-  lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = file_name };
-  parse_from_lexbuf lexbuf
+  let parse_exp_from_file (file_name : string) : exp =
+    let open Lexing in
+    let lexbuf = from_channel (open_in file_name) in
+    lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = file_name };
+    parse_from_lexbuf lexbuf
 
 end

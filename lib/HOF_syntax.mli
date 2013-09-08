@@ -13,9 +13,9 @@ type exp =
   | Id of id
   | If0 of exp * exp * exp
   | Lambda of id list * exp
-    (** Assume that all identifiers are distinct. *)
+  (** Assume that all identifiers are distinct. *)
   | Apply of exp * exp list
   | Record of (field * exp) list
-    (** Assume that all field names are distinct. *)
+  (** Assume that all field names are distinct. *)
   | SetField of exp * field * exp
   | GetField of exp * field

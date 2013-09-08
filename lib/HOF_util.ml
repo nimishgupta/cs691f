@@ -2,12 +2,12 @@ open HOF_sugar
 open PL_util
 
 module Parsers = Lexparse_util.MakeParsers (struct
-  exception ParseError = HOF_parser.Error
-  type token = HOF_parser.token
-  type exp = HOF_sugar.exp
-  let parser = HOF_parser.program
-  let lexer = HOF_lexer.token
-end)
+    exception ParseError = HOF_parser.Error
+    type token = HOF_parser.token
+    type exp = HOF_sugar.exp
+    let parser = HOF_parser.program
+    let lexer = HOF_lexer.token
+  end)
 
 open Parsers
 
@@ -64,47 +64,47 @@ module Format = struct
 
   let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit =
     parens (print_paren cxt e) fmt (fun () ->
-     match e with
-    | Int n -> fprintf fmt "@[%d@]" n
-    | Id x -> fprintf fmt "@[%s@]" x
-    | Add (e1, e2) ->
-        fprintf fmt "@[%a +@ %a@]" (exp ADD) e1 (exp MUL) e2
-    | Sub (e1, e2) ->
-        fprintf fmt "@[%a -@ %a@]" (exp ADD) e1 (exp MUL) e2
-    | Mul (e1, e2) ->
-        fprintf fmt "@[%a *@ %a@]" (exp MUL) e1 (exp LIST) e2
-    | Let (x, e1, e2) ->
-      fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
-        (exp EXP) e1 (exp EXP) e2        
-    | If0 (e1, e2, e3) ->
-        fprintf fmt "@[ifzero %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
-          (exp EXP) e1 (exp EXP) e2 (exp EXP) e3
-    | Lambda (xs, e) ->
-      fprintf fmt "@[<hv 2>lambda(%a) .@ %a" id_list xs (exp EXP) e
-    | Apply (fn, args) ->
-      fprintf fmt "@[%a(%a)@]" (exp ATOM) fn exp_list args
-    | GetField (obj, fld) ->
-      fprintf fmt "@[%a.%s@]" (exp ATOM) obj fld
-    | SetField (obj, fld, value) ->
-      fprintf fmt "@[%a[@[%s ->@;<1 2>%a@]]@]" (exp ATOM) obj fld (exp EXP) value
-    | Record flds ->
-      fprintf fmt "@[<hv>{%a@ }@]" fields flds
-    | If (e1, e2, e3) ->
-        fprintf fmt "@[if %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
-          (exp EXP) e1 (exp EXP) e2 (exp EXP) e3
-    | And (e1, e2) ->
-      fprintf fmt "@[%a &&@ %a]" (exp AND_) e1 (exp OR_) e2
-    | Or (e1, e2) ->
-      fprintf fmt "@[%a ||@ %a]" (exp OR_) e1 (exp CMP) e2
-    | IntEq (e1, e2) -> fprintf fmt "@[%a ==@ %a]" (exp ADD) e1 (exp ADD) e2
-    | Empty -> fprintf fmt "empty"
-    | IsEmpty e -> fprintf fmt "@[<hv 2>empty(@,%a@,)@]" (exp EXP) e
-    | Head e -> fprintf fmt "@[<hv 2>head(@,%a@,)@]" (exp EXP) e
-    | Tail e -> fprintf fmt "@[<hv 2>tail(@,%a@,)@]" (exp EXP) e
-    | True -> fprintf fmt "true"
-    | False -> fprintf fmt "false"
-    | Cons (e1, e2) ->
-      fprintf fmt "@[<hv>%a@ ::@ %a@]" (exp ATOM) e1 (exp LIST) e2)
+        match e with
+        | Int n -> fprintf fmt "@[%d@]" n
+        | Id x -> fprintf fmt "@[%s@]" x
+        | Add (e1, e2) ->
+          fprintf fmt "@[%a +@ %a@]" (exp ADD) e1 (exp MUL) e2
+        | Sub (e1, e2) ->
+          fprintf fmt "@[%a -@ %a@]" (exp ADD) e1 (exp MUL) e2
+        | Mul (e1, e2) ->
+          fprintf fmt "@[%a *@ %a@]" (exp MUL) e1 (exp LIST) e2
+        | Let (x, e1, e2) ->
+          fprintf fmt "@[<v>let @[%s =@;<1 2>%a in@]@ %a@]" x 
+            (exp EXP) e1 (exp EXP) e2        
+        | If0 (e1, e2, e3) ->
+          fprintf fmt "@[ifzero %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
+            (exp EXP) e1 (exp EXP) e2 (exp EXP) e3
+        | Lambda (xs, e) ->
+          fprintf fmt "@[<hv 2>lambda(%a) .@ %a" id_list xs (exp EXP) e
+        | Apply (fn, args) ->
+          fprintf fmt "@[%a(%a)@]" (exp ATOM) fn exp_list args
+        | GetField (obj, fld) ->
+          fprintf fmt "@[%a.%s@]" (exp ATOM) obj fld
+        | SetField (obj, fld, value) ->
+          fprintf fmt "@[%a[@[%s ->@;<1 2>%a@]]@]" (exp ATOM) obj fld (exp EXP) value
+        | Record flds ->
+          fprintf fmt "@[<hv>{%a@ }@]" fields flds
+        | If (e1, e2, e3) ->
+          fprintf fmt "@[if %a@;<1 2>@[then@;<1 2>%a@]@;<1 2>@[else@;<1 2>%a@]@]"
+            (exp EXP) e1 (exp EXP) e2 (exp EXP) e3
+        | And (e1, e2) ->
+          fprintf fmt "@[%a &&@ %a]" (exp AND_) e1 (exp OR_) e2
+        | Or (e1, e2) ->
+          fprintf fmt "@[%a ||@ %a]" (exp OR_) e1 (exp CMP) e2
+        | IntEq (e1, e2) -> fprintf fmt "@[%a ==@ %a]" (exp ADD) e1 (exp ADD) e2
+        | Empty -> fprintf fmt "empty"
+        | IsEmpty e -> fprintf fmt "@[<hv 2>empty(@,%a@,)@]" (exp EXP) e
+        | Head e -> fprintf fmt "@[<hv 2>head(@,%a@,)@]" (exp EXP) e
+        | Tail e -> fprintf fmt "@[<hv 2>tail(@,%a@,)@]" (exp EXP) e
+        | True -> fprintf fmt "true"
+        | False -> fprintf fmt "false"
+        | Cons (e1, e2) ->
+          fprintf fmt "@[<hv>%a@ ::@ %a@]" (exp ATOM) e1 (exp LIST) e2)
 
   and exp_list (fmt : formatter) (exps : exp list) : unit = match exps with
     | [] -> ()
