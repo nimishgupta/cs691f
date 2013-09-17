@@ -28,7 +28,7 @@ exp   ::= id
         | exp "(" exp_1 "," ... "," exp_n ")"
         | "{" field_1 ":" exp_1 "," ... "," field_n ":" exp_n "}"
         | exp "." field
-        | exp "." field "<-" val
+        | exp "[" field "->" val "]"
         | "empty"
         | e "::" e
         | "head" "(" e ")"

@@ -127,3 +127,6 @@ TEST "long record" = pp_test "\
   foooooooooooo3: 0,
   foooooooooooo4: 0
 }"
+
+TEST "Steve\'s test" = pp_test "{a:1}[a -> 10]"
+
