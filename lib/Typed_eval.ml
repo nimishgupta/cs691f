@@ -89,6 +89,7 @@ let rec eval (exp : exp) : exp = match exp with
     | Cons _ -> Bool false
     | Empty _ -> Bool true
     | v -> raise (Fatal_error (IsEmpty v)))
+  (* Evaluation of pairs *)
   | Pair (e1, e2) -> Pair (eval e1, eval e2)
   | ProjL e -> (match eval e with
     | Pair (v1, v2) -> v1
@@ -96,6 +97,7 @@ let rec eval (exp : exp) : exp = match exp with
   | ProjR e -> (match eval e with
     | Pair (v1, v2) -> v2
     | v -> raise (Fatal_error (ProjR v)))
+  (* END *)
 
 module type TYPECHECKER = sig
   exception Type_error of string
