@@ -1,3 +1,4 @@
+(** Parser and printer for the typed language *)
 open Typed_syntax
 
 type result = 
