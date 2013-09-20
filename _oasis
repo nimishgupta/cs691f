@@ -59,4 +59,7 @@ Document doc
     Arith_util,
     HOF_syntax,
     HOF_sugar,
-    HOF_util
+    HOF_util,
+    Typed_syntax,
+    Typed_util,
+    Typed_eval

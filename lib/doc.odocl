@@ -1,8 +1,11 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8dca44373e22ceb6a97288a3d793052f)
+# DO NOT EDIT (digest: c1c8581caa22e7486e004fcabf451d1c)
 Arith_syntax
 Arith_util
 HOF_syntax
 HOF_sugar
 HOF_util
+Typed_syntax
+Typed_util
+Typed_eval
 # OASIS_STOP
