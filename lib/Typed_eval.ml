@@ -123,14 +123,14 @@ module Make (TC : TYPECHECKER) = struct
         print_newline ()
       with
         | TC.Type_error msg ->
-            Format.printf "Type error:\n%s\n" msg
+            Format.printf "Type error:\n%s\n%!" msg
         | Expected_error exp ->
-            Format.printf "Expected runtime error:\n%s\n" (string_of_exp exp)
+            Format.printf "Expected runtime error:\n%s\n%!" (string_of_exp exp)
         | Fatal_error exp ->
-            Format.printf "Unexpected runtime error:\n%s\n" (string_of_exp exp));
+            Format.printf "Unexpected runtime error:\n%s\n%!" (string_of_exp exp));
       repl ()      
     | Typed_util.ParseError msg ->
-      Format.printf "Parser/lexer error:\n%s\n" msg;
+      Format.printf "Parser/lexer error:\n%s\n%!" msg;
       repl ()
 
   let _ =  
