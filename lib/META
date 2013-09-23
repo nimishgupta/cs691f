@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 7ba97844954d232c21da9f8ec980e32c)
-version = "1.2"
+# DO NOT EDIT (digest: 7b4c8257758e461719cbbb4a46b59748)
+version = "1.2.1"
 description = "Software for CS691f"
 requires = "oUnit"
 archive(byte) = "cs691f.cma"
