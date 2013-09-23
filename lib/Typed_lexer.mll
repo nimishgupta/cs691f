@@ -25,6 +25,8 @@ rule token = parse
   | "-" { MINUS }  
   | "*" { STAR }
   | "=" { EQUALS }
+  | "<" { LANGLE }
+  | ">" { RANGLE }
   | "->" { RARROW }
   | "::" { COLONCOLON }
   | "head" { HEAD }

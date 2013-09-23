@@ -84,6 +84,8 @@ add :
 cmp :
   | add { $1 }
   | add EQUALS add { Cmp (EQ, $1, $3) }
+  | add LANGLE add { Cmp (LT, $1, $3) }
+  | add RANGLE add { Cmp (GT, $1, $3) }
 
 or_ :
   | cmp { $1 }
