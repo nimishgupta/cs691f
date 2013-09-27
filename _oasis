@@ -51,7 +51,7 @@ Executable systemf
   MainIs: SystemF.ml
   CompiledObject: best
   BuildDepends:
-    unix, str, cs691f
+    unix, str, cs691f, ANSITerminal
 
 Executable testtool
   Path: tests
