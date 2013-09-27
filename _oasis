@@ -13,6 +13,7 @@ Library cs691f
   BuildDepends:
     oUnit
   InternalModules:
+    Identifier,
     PL_util,  
     Lexparse_util,
     Arith_lexer,
@@ -20,7 +21,10 @@ Library cs691f
     HOF_parser,
     HOF_lexer,
     Typed_parser,
-    Typed_lexer
+    Typed_lexer,
+    SystemF_typenv,
+    SystemF_parser,
+    SystemF_lexer
   Modules:
     Arith_syntax,
     Arith_util,
@@ -29,13 +33,25 @@ Library cs691f
     HOF_util,
     Typed_syntax,
     Typed_util,
-    Typed_eval
+    Typed_eval,
+    SystemF_syntax,
+    SystemF_tc,
+    SystemF_util,
+    SystemF_eval
+
 Executable cs691f
   Path: tool
   MainIs: Main.ml
   CompiledObject: best
   BuildDepends:
     unix
+
+Executable systemf
+  Path: tool
+  MainIs: SystemF.ml
+  CompiledObject: best
+  BuildDepends:
+    unix, str, cs691f
 
 Executable testtool
   Path: tests
