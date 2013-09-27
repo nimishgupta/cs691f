@@ -32,19 +32,20 @@ typ :
   | fn_typ { $1 }
 
 atom :
-  | INT { Int ($startpos, $1) }
-  | ID { Id ($startpos, $1) }
+  | INT { Int (Pos.mk $startpos $endpos, $1) }
+  | ID { Id (Pos.mk $startpos $endpos, $1) }
   | LPAREN exp RPAREN { $2 }
    
 app :
   | atom { $1 }
-  | app atom { App ($startpos, $1, $2) }
-  | app LANGLE typ RANGLE { TypApp ($startpos, $1, $3) }
+  | app atom { App (Pos.mk $startpos $endpos, $1, $2) }
+  | app LANGLE typ RANGLE { TypApp (Pos.mk $startpos $endpos, $1, $3) }
 
 exp :
   | app { $1 }
-  | FUN LPAREN ID COLON typ RPAREN RARROW exp { Fun ($startpos, $3, $5, $8) }
-  | TYPFUN ID RARROW exp { TypFun ($startpos, $2, $4) }
+  | FUN LPAREN ID COLON typ RPAREN RARROW exp
+    { Fun (Pos.mk $startpos $endpos, $3, $5, $8) }
+  | TYPFUN ID RARROW exp { TypFun (Pos.mk $startpos $endpos, $2, $4) }
 
 program :
   | exp EOF { $1 }

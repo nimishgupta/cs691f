@@ -26,6 +26,7 @@ Library cs691f
     SystemF_parser,
     SystemF_lexer
   Modules:
+    Pos,
     Arith_syntax,
     Arith_util,
     HOF_syntax,

@@ -1,5 +1,5 @@
 (** Abstract syntax for System F. *)
-type pos = Lexing.position
+type pos = Pos.t
 
 (** Abstract syntax for the Typed language. *)
 

@@ -11,7 +11,8 @@ let rec subst_prelude prelude exp =
 
 let rec repl prelude : unit = 
   print_string "> ";
-  match SystemF_util.parse (read_line ()) with
+  let text = read_line () in
+  match SystemF_util.parse text with
   | SystemF_util.Exp exp ->
     (try 
       let exp = subst_prelude prelude exp in
@@ -21,7 +22,8 @@ let rec repl prelude : unit =
     with
       | TC.Type_error (p, msg) ->
           Term.printf [Term.red] "Type error at %s:\n%s\n%!" 
-          (PL_util.string_of_pos p)  msg
+          (Pos.to_string p) msg;
+          Pos.print p text
       | Expected_error exp ->
           Term.printf [Term.blue] "Expected runtime error:\n%s\n%!" (string_of_exp exp)
       | Fatal_error exp ->
