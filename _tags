@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 2632d79964e65ae7cc3bb37d69a2b74d)
+# DO NOT EDIT (digest: 90124d98662eb184bcaca8078d74e966)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -15,6 +15,7 @@
 "_darcs": not_hygienic
 # Library cs691f
 "lib/cs691f.cmxs": use_cs691f
+<lib/*.ml{,i}>: pkg_ANSITerminal
 <lib/*.ml{,i}>: pkg_oUnit
 # Executable cs691f
 <tool/Main.{native,byte}>: pkg_unix
@@ -32,9 +33,11 @@
 # Executable testtool
 "tests/Main.byte": use_cs691f
 "tests/Main.byte": pkg_pa_ounit
+"tests/Main.byte": pkg_ANSITerminal
 "tests/Main.byte": pkg_oUnit
 <tests/*.ml{,i}>: use_cs691f
 <tests/*.ml{,i}>: pkg_pa_ounit
+<tests/*.ml{,i}>: pkg_ANSITerminal
 <tests/*.ml{,i}>: pkg_oUnit
 # OASIS_STOP
 true : use_menhir

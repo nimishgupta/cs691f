@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 7b4c8257758e461719cbbb4a46b59748)
+# DO NOT EDIT (digest: ecc3ab9855a3c968b8af5d06e1e6e63a)
 version = "1.2.1"
 description = "Software for CS691f"
-requires = "oUnit"
+requires = "oUnit ANSITerminal"
 archive(byte) = "cs691f.cma"
 archive(byte, plugin) = "cs691f.cma"
 archive(native) = "cs691f.cmxa"

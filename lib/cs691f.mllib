@@ -1,5 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 7b3259423763ee38103910b914a5c589)
+# DO NOT EDIT (digest: afe86bf786d5ee80c9b4760fdd693adb)
+Pos
 Arith_syntax
 Arith_util
 HOF_syntax
@@ -12,6 +13,7 @@ SystemF_syntax
 SystemF_tc
 SystemF_util
 SystemF_eval
+SystemF_sugar
 Identifier
 PL_util
 Lexparse_util
@@ -24,4 +26,5 @@ Typed_lexer
 SystemF_typenv
 SystemF_parser
 SystemF_lexer
+SystemF_subst
 # OASIS_STOP

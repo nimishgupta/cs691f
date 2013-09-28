@@ -11,7 +11,8 @@ BuildTools:      ocamlbuild, camlp4o, ocamldoc, menhir
 Library cs691f  
   Path: lib
   BuildDepends:
-    oUnit
+    oUnit,
+    ANSITerminal
   InternalModules:
     Identifier,
     PL_util,  
@@ -24,7 +25,8 @@ Library cs691f
     Typed_lexer,
     SystemF_typenv,
     SystemF_parser,
-    SystemF_lexer
+    SystemF_lexer,
+    SystemF_subst
   Modules:
     Pos,
     Arith_syntax,
@@ -38,7 +40,8 @@ Library cs691f
     SystemF_syntax,
     SystemF_tc,
     SystemF_util,
-    SystemF_eval
+    SystemF_eval,
+    SystemF_sugar
 
 Executable cs691f
   Path: tool
