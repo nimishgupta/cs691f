@@ -13,6 +13,8 @@ type typ =
 
 type exp =
   | Int of pos * int
+  | LT of pos * exp * exp (** Primitive integer comparison. *)
+  | EQ of pos * exp * exp (** Primitive integer comparison. *)  
   | Id of pos * id
   | Fun of pos * id * typ * exp
   | App of pos * exp * exp
@@ -42,6 +44,8 @@ let rec desugar_typ (decls : decls) (typ : typ) : F.typ = match typ with
 
 let rec desugar_exp (decls : decls) (exp : exp) = match exp with
   | Int (p, n) -> F.Int (p, n)
+  | LT (p, e1, e2) -> F.LT (p, desugar_exp decls e1, desugar_exp decls e2)
+  | EQ (p, e1, e2) -> F.EQ (p, desugar_exp decls e1, desugar_exp decls e2)
   | Id (p, x) -> F.Id (p, x)
   | Fun (p, x, t, e) -> F.Fun (p, x, desugar_typ decls t, desugar_exp decls e)
   | App (p, e1, e2) -> F.App (p, desugar_exp decls e1, desugar_exp decls e2)

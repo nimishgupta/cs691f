@@ -25,8 +25,19 @@ let rec ok (env : Env.t) (typ : typ) : bool = match typ with
   | TId x -> Env.bound_tid x env
   | TForall (x, t) -> ok (Env.bind_tid x env) t
 
+let church_bool = 
+  let r = Id.fresh "R" in
+  TForall (r, TFun (TId r, TFun (TId r, TId r)))
+
 let rec tc (env : Env.t) (exp : exp) : typ = match exp with
   | Int _ -> TInt
+  | LT (p, e1, e2)
+  | EQ (p, e1, e2) ->
+    (match tc env e1, tc env e2 with
+     | TInt, TInt -> church_bool
+     | t1, t2 -> raise (Type_error (p, Format.sprintf "Expected ints, \
+      received:\n%s\nand:\n%s" (Util.string_of_typ t1)
+      (Util.string_of_typ t2))))
   | Id (p, x) -> (match Env.lookup x env with
     | Some t -> t
     | None -> raise (Type_error (p, "free identifier " ^ Id.to_string x)))

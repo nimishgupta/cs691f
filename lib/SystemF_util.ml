@@ -60,7 +60,7 @@ module Format = struct
   open Format
 
 
-  type cxt = ATOM | APP | EXP 
+  type cxt = ATOM | APP | CMP | EXP 
 
   let print_paren (cxt : cxt) (e : exp) : bool = match e with
     | Int _ -> false
@@ -68,12 +68,18 @@ module Format = struct
     | TypFun _ -> cxt < EXP
     | Fun _ -> cxt < EXP
     | App _ -> cxt < APP
+    | LT _ -> cxt < CMP
+    | EQ _ -> cxt < CMP
     | TypApp _ -> cxt < APP
 
   let rec exp (cxt : cxt) (fmt : formatter) (e : exp) : unit =
     parens (print_paren cxt e) fmt (fun () ->
         match e with
         | Int (_, n) -> fprintf fmt "@[%d@]" n
+        | LT (_, e1, e2) ->
+                  fprintf fmt "@[%a <@ %a@]" (exp APP) e1 (exp APP) e2
+        | EQ (_, e1, e2) ->
+                  fprintf fmt "@[%a =@ %a@]" (exp APP) e1 (exp APP) e2
         | Id (_, x) -> fprintf fmt "@[%s@]" (Id.to_string x)
         | Fun (_, x, t, e) ->
           fprintf fmt "@[<hv 2>fun (%s : %a) ->@ %a" (Id.to_string x) 

@@ -30,7 +30,7 @@ rule token = parse
   | "typfun" { TYPFUN }
   | "int" { INT_TYPE }
   | "type" { TYPE }
-  | "expression" { EXP }
+  | "let" { LET }
   | "[[" { LLBRACKET }
   | "]]" { RRBRACKET }
   | eof { EOF } 

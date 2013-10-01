@@ -6,7 +6,7 @@ open SystemF_sugar
 
 %token LPAREN RPAREN LANGLE RANGLE LLBRACKET RRBRACKET COLON DOT EQUALS SEMISEMI 
 %token RARROW
-%token FUN TYPFUN FORALL INT_TYPE TYPE EXP
+%token FUN TYPFUN FORALL INT_TYPE TYPE LET
 %token EOF
 %token<Identifier.t> ID
 %token<int> INT
@@ -49,8 +49,14 @@ app :
   | app atom { App (Pos.mk $startpos $endpos, $1, $2) }
   | app LANGLE typ RANGLE { TypApp (Pos.mk $startpos $endpos, $1, $3) }
 
-exp :
+comp :
   | app { $1 }
+  | app LANGLE app { LT (Pos.mk $startpos $endpos, $1, $3) }
+  | app RANGLE app { LT (Pos.mk $startpos $endpos, $3, $1) }
+  | app EQUALS app { EQ (Pos.mk $startpos $endpos, $1, $3) }  
+
+exp :
+  | comp { $1 }
   | FUN LPAREN ID COLON typ RPAREN RARROW exp
     { Fun (Pos.mk $startpos $endpos, $3, $5, $8) }
   | TYPFUN ID RARROW exp { TypFun (Pos.mk $startpos $endpos, $2, $4) }
@@ -58,7 +64,7 @@ exp :
 command :
   | TYPE LLBRACKET ID id_list RRBRACKET EQUALS typ
     { NewType ($3, TypAbbrv ($4, $7)) }
-  | EXP ID EQUALS exp
+  | LET ID EQUALS exp
     { NamedExp ($2, $4) }
   | exp
     { Exp $1 }

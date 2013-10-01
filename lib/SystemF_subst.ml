@@ -4,6 +4,8 @@ module Id = Identifier
 
 let rec subst (x : id) (v : exp) (exp : exp) : exp = match exp with
   | Int _ -> exp
+  | LT (p, e1, e2) -> LT (p, subst x v e1, subst x v e2)
+  | EQ (p, e1, e2) -> EQ (p, subst x v e1, subst x v e2)
   | Id (p, y) -> if x = y then v else exp
   | Fun (p, y, t, e) -> Fun (p, y, t, if x = y then e else subst x v e)
   | TypFun (p, y, e) -> TypFun (p, y, subst x v e)
@@ -37,6 +39,8 @@ let rec tsubst (x : id) (u : typ) (t : typ) : typ = match t with
 
 let rec tsubst_exp (x : id) (t : typ) (exp : exp) : exp = match exp with
   | Int _ -> exp
+  | LT (p, e1, e2) -> LT (p, tsubst_exp x t e1, tsubst_exp x t e2)
+  | EQ (p, e1, e2) -> EQ (p, tsubst_exp x t e1, tsubst_exp x t e2)
   | Id _ -> exp
   | Fun (p, y, t', e) -> Fun (p, y, tsubst x t t', tsubst_exp x t e)
   | TypFun (p, y, e) -> 

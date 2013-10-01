@@ -11,6 +11,8 @@ type typ =
 
 type exp =
   | Int of pos * int (** integers *)
+  | LT of pos * exp * exp (** Primitive integer comparison. *)
+  | EQ of pos * exp * exp (** Primitive integer comparison. *)
   | Id of pos * id (** [x], [y], [z], [x_], [y_], [z_], [x0], [y0], [z0], etc. *)
   | Fun of pos * id * typ * exp (** [fun (x : t) -> e] *)
   | App of pos * exp * exp (** [e1 e2] *)

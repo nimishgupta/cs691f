@@ -10,6 +10,8 @@ type typ =
 
 type exp =
   | Int of pos * int
+  | LT of pos * exp * exp (** Primitive integer comparison *)
+  | EQ of pos * exp * exp (** Primitive integer comparison *)  
   | Id of pos * id
   | Fun of pos * id * typ * exp
   | App of pos * exp * exp
