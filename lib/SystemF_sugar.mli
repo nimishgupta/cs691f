@@ -2,10 +2,6 @@
 type pos = Pos.t
 type id = Identifier.t
 
-type ('a, 'b) either =
-  | Left of 'a
-  | Right of 'b
-
 type typ =
   | TInt (** [int] *)
   | TFun of typ * typ (** [t1 -> t2] *)
@@ -20,17 +16,14 @@ type exp =
   | App of pos * exp * exp (** [e1 e2] *)
   | TypFun of pos * id * exp (** [typfun a -> e] *)
   | TypApp of pos * exp * typ (** [e <t>] *)
-  | Abbrv of pos * id * (exp, typ) either list (** [X], [Y], etc. *)
 
-type abbrv =
-  | TypAbbrv of id list * typ (** type [[t x y z]] = ... *)
-  | ExpAbbrv of (id, id) either list * exp (** expression [[C x <T> y]] = ... *)
-
-type decls = (id * abbrv) list
+type typAbbrv = TypAbbrv of id list * typ
 
 type cmd =
-  | NewAbbrv of id * abbrv
+  | NewType of id * typAbbrv
+  | NamedExp of id * exp
   | Exp of exp
 
+type decls = (id * typAbbrv) list
 
-val desugar : decls -> exp -> SystemF_syntax.exp
+val desugar : decls -> (SystemF_syntax.exp -> SystemF_syntax.exp) -> exp -> SystemF_syntax.exp

@@ -20,16 +20,6 @@ typ_list :
   | { [] }
   | atom_typ typ_list { $1 :: $2 }
 
-exp_typ_list :
-  | { [] }
-  | atom exp_typ_list { (Left $1) :: $2 }
-  | LANGLE typ RANGLE exp_typ_list { (Right $2) :: $4 }
-
-id_tid_list :
-  | { [] }
-  | ID id_tid_list { (Left $1) :: $2 }
-  | LANGLE ID RANGLE id_tid_list { (Right $2) :: $4 }
-
 id_list :
   | { [] }
   | ID id_list { $1 :: $2 }
@@ -53,8 +43,6 @@ atom :
   | INT { Int (Pos.mk $startpos $endpos, $1) }
   | ID { Id (Pos.mk $startpos $endpos, $1) }
   | LPAREN exp RPAREN { $2 }
-  | LLBRACKET ID exp_typ_list RRBRACKET 
-    { Abbrv (Pos.mk $startpos $endpos, $2, $3) }
    
 app :
   | atom { $1 }
@@ -69,9 +57,9 @@ exp :
 
 command :
   | TYPE LLBRACKET ID id_list RRBRACKET EQUALS typ
-    { NewAbbrv ($3, TypAbbrv ($4, $7)) }
-  | EXP LLBRACKET ID id_tid_list RRBRACKET EQUALS exp
-    { NewAbbrv ($3, ExpAbbrv ($4, $7)) }
+    { NewType ($3, TypAbbrv ($4, $7)) }
+  | EXP ID EQUALS exp
+    { NamedExp ($2, $4) }
   | exp
     { Exp $1 }
 

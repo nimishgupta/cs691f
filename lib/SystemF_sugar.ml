@@ -4,10 +4,6 @@ module F = SystemF_syntax
 
 type id = Identifier.t
 
-type ('a, 'b) either =
-  | Left of 'a
-  | Right of 'b
-
 type typ =
   | TInt
   | TFun of typ * typ
@@ -22,23 +18,15 @@ type exp =
   | App of pos * exp * exp
   | TypFun of pos * id * exp
   | TypApp of pos * exp * typ
-  | Abbrv of pos * id * (exp, typ) either list
 
-type abbrv =
-  | TypAbbrv of id list * typ
-  | ExpAbbrv of (id, id) either list * exp
-
-type decls = (id * abbrv) list
+type typAbbrv = TypAbbrv of id list * typ
 
 type cmd =
-  | NewAbbrv of id * abbrv
+  | NewType of id * typAbbrv
+  | NamedExp of id * exp
   | Exp of exp
 
-let subst_either (x : (id, id) either) (v : (F.exp, F.typ) either) (e : F.exp) : F.exp =
-  match (x, v) with
-    | (Left x, Left v) -> subst x v e
-    | (Right x, Right v) -> tsubst_exp x v e
-    | _ -> failwith "expected blah"
+type decls = (id * typAbbrv) list
 
 let rec desugar_typ (decls : decls) (typ : typ) : F.typ = match typ with
   | TInt -> F.TInt
@@ -50,23 +38,15 @@ let rec desugar_typ (decls : decls) (typ : typ) : F.typ = match typ with
         List.fold_right2 
           tsubst 
           xs (List.map (desugar_typ decls) ts)
-          (desugar_typ decls t)
-    | ExpAbbrv _ -> failwith "expeceted type abbrv")
+          (desugar_typ decls t))
 
-and desugar (decls : decls) (exp : exp) = match exp with
+let rec desugar_exp (decls : decls) (exp : exp) = match exp with
   | Int (p, n) -> F.Int (p, n)
   | Id (p, x) -> F.Id (p, x)
-  | Fun (p, x, t, e) -> F.Fun (p, x, desugar_typ decls t, desugar decls e)
-  | App (p, e1, e2) -> F.App (p, desugar decls e1, desugar decls e2)
-  | TypFun (p, x, e) -> F.TypFun (p, x, desugar decls e)
-  | TypApp (x, e, t) -> F.TypApp (x, desugar decls e, desugar_typ decls t)
-  | Abbrv (p, x, es) -> (match List.assoc x decls with
-    | ExpAbbrv (xs, e) ->
-      let es' = List.map (desugar_either decls) es in
-      List.fold_right2 subst_either xs es' (desugar decls e)
-    | TypAbbrv _ -> failwith "expected typ")
+  | Fun (p, x, t, e) -> F.Fun (p, x, desugar_typ decls t, desugar_exp decls e)
+  | App (p, e1, e2) -> F.App (p, desugar_exp decls e1, desugar_exp decls e2)
+  | TypFun (p, x, e) -> F.TypFun (p, x, desugar_exp decls e)
+  | TypApp (x, e, t) -> F.TypApp (x, desugar_exp decls e, desugar_typ decls t)
 
-and desugar_either (decls : decls) (x : (exp, typ) either) : (F.exp, F.typ) either = 
-  match x with
-    | Left x -> Left (desugar decls x)
-    | Right x -> Right (desugar_typ decls x)
+let rec desugar (types : decls) (subst : F.exp -> F.exp) (exp : exp) = 
+  subst (desugar_exp types exp)
