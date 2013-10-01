@@ -1,4 +1,5 @@
 open SystemF_syntax
+open SystemF_subst
 
 exception Type_error of pos * string
 
@@ -6,18 +7,6 @@ module Id = Identifier
 module Env = SystemF_typenv
 module Util = SystemF_util
 
-let rec is_free_tid (x : id) (t : typ) : bool = match t with
-  | TInt -> false
-  | TFun (t1, t2) -> is_free_tid x t1 || is_free_tid x t2
-  | TId y -> x = y
-  | TForall (y, t) -> if x = y then false else is_free_tid x t
-
-let rec rename_tid (x : id) (fresh_x : id) (t : typ) : typ = match t with
-  | TInt -> TInt
-  | TFun (t1, t2) -> TFun (rename_tid x fresh_x t1, rename_tid x fresh_x t2)
-  | TId y -> if x = y then TId fresh_x else TId y
-  | TForall (y, t) ->
-    if x = y then TForall (y, t) else TForall (y, rename_tid x fresh_x t)
 
 let rec is_typ_equal (t1 : typ) (t2 : typ) : bool = match (t1, t2) with
   | TInt, TInt -> true
@@ -29,17 +18,6 @@ let rec is_typ_equal (t1 : typ) (t2 : typ) : bool = match (t1, t2) with
     is_typ_equal (rename_tid x z s) (rename_tid y z t)
   | _ -> false
 
-let rec tsubst (x : id) (u : typ) (t : typ) : typ = match t with
-  | TInt -> TInt
-  | TFun (t1, t2) -> TFun (tsubst x u t1, tsubst x u t2)
-  | TId y -> if x = y then u else TId y
-  | TForall (y, t) ->
-    if x = y then TForall (y, t) 
-    else if is_free_tid y u then
-      let y' = Id.fresh_from y in
-      TForall (y', tsubst x u (rename_tid y y' t))
-    else 
-      TForall (y, tsubst x u t)
 
 let rec ok (env : Env.t) (typ : typ) : bool = match typ with
   | TInt -> true

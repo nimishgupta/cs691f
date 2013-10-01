@@ -29,6 +29,10 @@ rule token = parse
   | "fun" { FUN }
   | "typfun" { TYPFUN }
   | "int" { INT_TYPE }
+  | "type" { TYPE }
+  | "expression" { EXP }
+  | "[[" { LLBRACKET }
+  | "]]" { RRBRACKET }
   | eof { EOF } 
   | id as x { ID (Identifier.from_string x) }
 

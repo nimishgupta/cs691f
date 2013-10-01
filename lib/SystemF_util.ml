@@ -1,36 +1,27 @@
 open SystemF_syntax
 open PL_util
 
-module PreludeParsers = Lexparse_util.MakeParsers (struct
-    exception ParseError = SystemF_parser.Error
-    type token = SystemF_parser.token
-    type exp = (SystemF_syntax.id * SystemF_syntax.exp) list
-    let parser = SystemF_parser.prelude
-    let lexer = SystemF_lexer.token
-  end)
-
-let parse_prelude_from_file = PreludeParsers.parse_exp_from_file
-
 module Parsers = Lexparse_util.MakeParsers (struct
     exception ParseError = SystemF_parser.Error
     type token = SystemF_parser.token
-    type exp = SystemF_syntax.exp
-    let parser = SystemF_parser.program
+    type exp = SystemF_sugar.cmd list
+    let parser = SystemF_parser.commands
     let lexer = SystemF_lexer.token
   end)
+
 
 open Parsers
 
 type result = 
-  | Exp of exp
+  | Command of SystemF_sugar.cmd list
   | ParseError of string 
 
 let parse_from_lexbuf (lexbuf : Lexing.lexbuf) : result = 
-  try Exp (parse_from_lexbuf lexbuf)
+  try Command (parse_from_lexbuf lexbuf)
   with Lexparse_util.Error str -> ParseError str
 
 let parse_from_file (file_name : string) : result =
-  try Exp (parse_exp_from_file file_name)
+  try Command (parse_exp_from_file file_name)
   with Lexparse_util.Error str -> ParseError str
 
 let parse (str : string) : result = 
@@ -92,7 +83,7 @@ module Format = struct
         | App (_, e1, e2) ->
           fprintf fmt "@[%a@ %a@]" (exp APP) e1 (exp ATOM) e2
         | TypApp (_, e1, t2) ->
-          fprintf fmt "@[%a@ %a@]" (exp APP) e1 format_typ t2)
+          fprintf fmt "@[%a@ <%a>@]" (exp APP) e1 format_typ t2)
 
 end
 

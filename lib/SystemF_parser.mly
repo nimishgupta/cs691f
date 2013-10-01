@@ -1,27 +1,45 @@
 %{
 
-open SystemF_syntax
+open SystemF_sugar
 
 %}
 
-%token LPAREN RPAREN LANGLE RANGLE COLON DOT EQUALS SEMISEMI
+%token LPAREN RPAREN LANGLE RANGLE LLBRACKET RRBRACKET COLON DOT EQUALS SEMISEMI 
 %token RARROW
-%token FUN TYPFUN FORALL INT_TYPE
+%token FUN TYPFUN FORALL INT_TYPE TYPE EXP
 %token EOF
 %token<Identifier.t> ID
 %token<int> INT
 
-%start program
-%start prelude
-%type <SystemF_syntax.exp> program
-%type <(Identifier.t * SystemF_syntax.exp) list > prelude
+%start commands
+%type <SystemF_sugar.cmd list> commands
 
 %%
+
+typ_list :
+  | { [] }
+  | atom_typ typ_list { $1 :: $2 }
+
+exp_typ_list :
+  | { [] }
+  | atom exp_typ_list { (Left $1) :: $2 }
+  | LANGLE typ RANGLE exp_typ_list { (Right $2) :: $4 }
+
+id_tid_list :
+  | { [] }
+  | ID id_tid_list { (Left $1) :: $2 }
+  | LANGLE ID RANGLE id_tid_list { (Right $2) :: $4 }
+
+id_list :
+  | { [] }
+  | ID id_list { $1 :: $2 }
 
 atom_typ :
   | LPAREN typ RPAREN { $2 }
   | INT_TYPE { TInt }
   | ID { TId $1 }
+  | LLBRACKET ID typ_list RRBRACKET
+    { TAbbrv ($2, $3) }
    
 fn_typ :
   | atom_typ { $1 }
@@ -35,6 +53,8 @@ atom :
   | INT { Int (Pos.mk $startpos $endpos, $1) }
   | ID { Id (Pos.mk $startpos $endpos, $1) }
   | LPAREN exp RPAREN { $2 }
+  | LLBRACKET ID exp_typ_list RRBRACKET 
+    { Abbrv (Pos.mk $startpos $endpos, $2, $3) }
    
 app :
   | atom { $1 }
@@ -47,13 +67,18 @@ exp :
     { Fun (Pos.mk $startpos $endpos, $3, $5, $8) }
   | TYPFUN ID RARROW exp { TypFun (Pos.mk $startpos $endpos, $2, $4) }
 
-program :
-  | exp EOF { $1 }
+command :
+  | TYPE LLBRACKET ID id_list RRBRACKET EQUALS typ
+    { NewAbbrv ($3, TypAbbrv ($4, $7)) }
+  | EXP LLBRACKET ID id_tid_list RRBRACKET EQUALS exp
+    { NewAbbrv ($3, ExpAbbrv ($4, $7)) }
+  | exp
+    { Exp $1 }
 
-defs :
-  | { [] }
-  | ID EQUALS exp SEMISEMI defs { ($1, $3) :: $5 }
+commands :
+  | EOF { [] }
+  | command EOF { [$1] }
+  | command SEMISEMI commands { $1 :: $3 }
 
-prelude :
-  | defs EOF { $1 } 
+
 %%
