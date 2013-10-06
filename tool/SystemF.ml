@@ -3,6 +3,7 @@ module Term = ANSITerminal
 
 open SystemF_eval
 open SystemF_util
+open SystemF_pretty
 
 let rec repl decls subst : unit = 
   print_string "> ";

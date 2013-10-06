@@ -6,6 +6,7 @@ exception Type_error of pos * string
 module Id = Identifier
 module Env = SystemF_typenv
 module Util = SystemF_util
+module Pretty = SystemF_pretty
 
 
 let rec is_typ_equal (t1 : typ) (t2 : typ) : bool = match (t1, t2) with
@@ -36,8 +37,8 @@ let rec tc (env : Env.t) (exp : exp) : typ = match exp with
     (match tc env e1, tc env e2 with
      | TInt, TInt -> church_bool
      | t1, t2 -> raise (Type_error (p, Format.sprintf "Expected ints, \
-      received:\n%s\nand:\n%s" (Util.string_of_typ t1)
-      (Util.string_of_typ t2))))
+      received:\n%s\nand:\n%s" (Pretty.string_of_typ t1)
+      (Pretty.string_of_typ t2))))
   | Id (p, x) -> (match Env.lookup x env with
     | Some t -> t
     | None -> raise (Type_error (p, "free identifier " ^ Id.to_string x)))
@@ -53,21 +54,23 @@ let rec tc (env : Env.t) (exp : exp) : typ = match exp with
       else
         raise (Type_error (p, 
           Format.sprintf "Function  of type:\n\
-                           %s\nGot argument of type:\n%s" 
-            (Util.string_of_typ (TFun (t1, t2)))
-            (Util.string_of_typ t1')))
+                           %s\nGot argument of type:\n%s\n
+                           Expected an argument of type:\n%s" 
+            (Pretty.string_of_typ (TFun (t1, t2)))
+            (Pretty.string_of_typ t1')
+            (Pretty.string_of_typ t1)))
     | (t, _) -> raise (Type_error (p, 
         Format.sprintf "In a function application, the expected function:\n\
           %s\nHas type:\n%s"
-          (Util.string_of_exp e1) (Util.string_of_typ t))))
+          (Pretty.string_of_exp e1) (Pretty.string_of_typ t))))
   | TypFun (_, x, e) -> 
     TForall (x, tc (Env.bind_tid x env) e)
   | TypApp (p, e, t) -> (match tc env e, ok env t with
     | (TForall (x, t'), true) -> tsubst x t t'
     | (_, false) -> raise (Type_error (p,
-      Format.sprintf "Type argument is ill-formed:\n%s" (Util.string_of_typ t)))
+      Format.sprintf "Type argument is ill-formed:\n%s" (Pretty.string_of_typ t)))
     | (s, _) -> raise (Type_error (p,
         Format.sprintf "Expression in type-function position:\n\
-          %s\nHas type:\n%s" (Util.string_of_exp e) (Util.string_of_typ s))))
+          %s\nHas type:\n%s" (Pretty.string_of_exp e) (Pretty.string_of_typ s))))
 
   let typecheck = tc Env.empty
