@@ -1,7 +1,7 @@
 OASISFormat:     0.3
 OCamlVersion:    >= 4.00.1
 Name:            cs691f
-Version:         1.3.0
+Version:         1.3.1
 Synopsis:        Software for CS691f
 Authors:         Arjun Guha
 License:         LGPL
@@ -14,7 +14,6 @@ Library cs691f
     oUnit,
     ANSITerminal
   InternalModules:
-    Identifier,
     PL_util,  
     Lexparse_util,
     Arith_lexer,
@@ -26,8 +25,10 @@ Library cs691f
     SystemF_typenv,
     SystemF_parser,
     SystemF_lexer,
-    SystemF_subst
+    SystemF_subst,
+    SystemF_pretty
   Modules:
+    Identifier,  
     Pos,
     Arith_syntax,
     Arith_util,
